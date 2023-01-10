@@ -6,6 +6,7 @@ import * as efs from 'aws-cdk-lib/aws-efs';
 import * as elb from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { AuroraServerlessV2Cluster } from './aws-aurora-serverless-v2';
@@ -34,19 +35,17 @@ export class CvatStack extends cdk.Stack {
       },
     });
 
-    const googleClientId = new Parameter(this, 'GoogleClientId', {
-      type: 'String',
-      default: 'N/A',
-      noEcho: true,
-    });
+    const googleSecret = new OauthSecret(this, 'GoogleOauthSecret', { idpName: 'Google' });
+    const githubSecret = new OauthSecret(this, 'GitHubOauthSecret', { idpName: 'GitHub' });
 
-    const googleClientSecret = new Parameter(this, 'GoogleClientSecret', {
-      type: 'String',
-      default: 'N/A',
-      noEcho: true,
+    const oauthDisabled = new cdk.CfnCondition(this, 'OauthDisabled', {
+      expression: cdk.Fn.conditionAnd(
+        cdk.Fn.conditionEquals(googleSecret.clientId, ''),
+        cdk.Fn.conditionEquals(googleSecret.clientSecret, ''),
+        cdk.Fn.conditionEquals(githubSecret.clientId, ''),
+        cdk.Fn.conditionEquals(githubSecret.clientSecret, ''),
+      ),
     });
-
-    const useSocialLogin = new cdk.CfnCondition(this, 'UseSocialLogin', { expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(googleClientId, 'N/A')) });
 
     const vpc = new ec2.Vpc(this, 'VPC', { natGateways: 1 });
 
@@ -144,7 +143,7 @@ export class CvatStack extends cdk.Stack {
           ADAPTIVE_AUTO_ANNOTATION: 'false',
           IAM_OPA_BUNDLE: '1',
           // Oauth
-          USE_ALLAUTH_SOCIAL_ACCOUNTS: cdk.Fn.conditionIf(useSocialLogin.logicalId, 'True', 'False').toString(),
+          USE_ALLAUTH_SOCIAL_ACCOUNTS: cdk.Fn.conditionIf(oauthDisabled.logicalId, 'False', 'True').toString(),
           // Clam AntiVirus
           CLAM_AV: 'yes',
           // Automatic annotation
@@ -156,8 +155,10 @@ export class CvatStack extends cdk.Stack {
           CVAT_POSTGRES_DBNAME: ecs.Secret.fromSecretsManager(db.secret!, 'dbname'),
           CVAT_POSTGRES_USER: ecs.Secret.fromSecretsManager(db.secret!, 'username'),
           CVAT_POSTGRES_PASSWORD: ecs.Secret.fromSecretsManager(db.secret!, 'password'),
-          SOCIAL_AUTH_GOOGLE_CLIENT_ID: ecs.Secret.fromSsmParameter(googleClientId.Parameter),
-          SOCIAL_AUTH_GOOGLE_CLIENT_SECRET: ecs.Secret.fromSsmParameter(googleClientSecret.Parameter),
+          SOCIAL_AUTH_GOOGLE_CLIENT_ID: ecs.Secret.fromSecretsManager(googleSecret, 'clientId'),
+          SOCIAL_AUTH_GOOGLE_CLIENT_SECRET: ecs.Secret.fromSecretsManager(googleSecret, 'clientSecret'),
+          SOCIAL_AUTH_GITHUB_CLIENT_ID: ecs.Secret.fromSecretsManager(githubSecret, 'clientId'),
+          SOCIAL_AUTH_GITHUB_CLIENT_SECRET: ecs.Secret.fromSecretsManager(githubSecret, 'clientSecret'),
         },
       },
       containerPort: 8080,
@@ -378,16 +379,41 @@ export class CvatStack extends cdk.Stack {
   }
 }
 
-class Parameter extends cdk.CfnParameter {
-  public readonly Parameter: StringParameter;
+interface OauthSecretProps {
+  idpName: string;
+}
 
-  constructor(scope: Construct, id: string, props: cdk.CfnParameterProps) {
-    super(scope, id, props);
+class OauthSecret extends Secret {
+  public readonly clientId: cdk.CfnParameter;
+  public readonly clientSecret: cdk.CfnParameter;
 
-    this.Parameter = new StringParameter(this, 'Parameter', {
-      simpleName: false,
-      parameterName: `/${cdk.Aws.STACK_NAME}/${id}`,
-      stringValue: this.valueAsString,
+  constructor(scope: Construct, id: string, props: OauthSecretProps) {
+
+    const idpName = props.idpName;
+
+    const clientId = new cdk.CfnParameter(scope, idpName + 'ClientId', {
+      description: `${idpName} - ClientId`,
+      type: 'String',
+      default: '',
+      noEcho: true,
     });
+
+    const clientSecret = new cdk.CfnParameter(scope, idpName + 'ClientSecret', {
+      description: `${idpName} - ClientSecret`,
+      type: 'String',
+      default: '',
+      noEcho: true,
+    });
+
+    super(scope, id, {
+      description: `${idpName} - ClientId & ClientSecret`,
+      secretObjectValue: {
+        clientId: cdk.SecretValue.cfnParameter(clientId),
+        clientSecret: cdk.SecretValue.cfnParameter(clientSecret),
+      },
+    });
+
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
   }
 }

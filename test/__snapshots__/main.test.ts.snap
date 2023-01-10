@@ -3,14 +3,38 @@
 exports[`Snapshot 1`] = `
 {
   "Conditions": {
-    "UseSocialLogin": {
-      "Fn::Not": [
+    "OauthDisabled": {
+      "Fn::And": [
         {
           "Fn::Equals": [
             {
               "Ref": "GoogleClientId",
             },
-            "N/A",
+            "",
+          ],
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "GoogleClientSecret",
+            },
+            "",
+          ],
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "GitHubClientId",
+            },
+            "",
+          ],
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "GitHubClientSecret",
+            },
+            "",
           ],
         },
       ],
@@ -65,13 +89,27 @@ exports[`Snapshot 1`] = `
       "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
+    "GitHubClientId": {
+      "Default": "",
+      "Description": "GitHub - ClientId",
+      "NoEcho": true,
+      "Type": "String",
+    },
+    "GitHubClientSecret": {
+      "Default": "",
+      "Description": "GitHub - ClientSecret",
+      "NoEcho": true,
+      "Type": "String",
+    },
     "GoogleClientId": {
-      "Default": "N/A",
+      "Default": "",
+      "Description": "Google - ClientId",
       "NoEcho": true,
       "Type": "String",
     },
     "GoogleClientSecret": {
-      "Default": "N/A",
+      "Default": "",
+      "Description": "Google - ClientSecret",
       "NoEcho": true,
       "Type": "String",
     },
@@ -604,47 +642,53 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::EFS::AccessPoint",
     },
-    "GoogleClientIdParameter314808B6": {
+    "GitHubOauthSecretEE7EDD15": {
+      "DeletionPolicy": "Delete",
       "Properties": {
-        "Name": {
+        "Description": "GitHub - ClientId & ClientSecret",
+        "SecretString": {
           "Fn::Join": [
             "",
             [
-              "/",
+              "{"clientId":"",
               {
-                "Ref": "AWS::StackName",
+                "Ref": "GitHubClientId",
               },
-              "/GoogleClientId",
+              "","clientSecret":"",
+              {
+                "Ref": "GitHubClientSecret",
+              },
+              ""}",
             ],
           ],
         },
-        "Type": "String",
-        "Value": {
-          "Ref": "GoogleClientId",
-        },
       },
-      "Type": "AWS::SSM::Parameter",
+      "Type": "AWS::SecretsManager::Secret",
+      "UpdateReplacePolicy": "Delete",
     },
-    "GoogleClientSecretParameter5B5BDDF8": {
+    "GoogleOauthSecretE885EF50": {
+      "DeletionPolicy": "Delete",
       "Properties": {
-        "Name": {
+        "Description": "Google - ClientId & ClientSecret",
+        "SecretString": {
           "Fn::Join": [
             "",
             [
-              "/",
+              "{"clientId":"",
               {
-                "Ref": "AWS::StackName",
+                "Ref": "GoogleClientId",
               },
-              "/GoogleClientSecret",
+              "","clientSecret":"",
+              {
+                "Ref": "GoogleClientSecret",
+              },
+              ""}",
             ],
           ],
         },
-        "Type": "String",
-        "Value": {
-          "Ref": "GoogleClientSecret",
-        },
       },
-      "Type": "AWS::SSM::Parameter",
+      "Type": "AWS::SecretsManager::Secret",
+      "UpdateReplacePolicy": "Delete",
     },
     "LoadBalancerBE9EEC3A": {
       "DependsOn": [
@@ -1806,9 +1850,9 @@ exports[`Snapshot 1`] = `
                 "Name": "USE_ALLAUTH_SOCIAL_ACCOUNTS",
                 "Value": {
                   "Fn::If": [
-                    "UseSocialLogin",
-                    "True",
+                    "OauthDisabled",
                     "False",
+                    "True",
                   ],
                 },
               },
@@ -1946,22 +1990,10 @@ exports[`Snapshot 1`] = `
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
                       {
-                        "Ref": "AWS::Partition",
+                        "Ref": "GoogleOauthSecretE885EF50",
                       },
-                      ":ssm:",
-                      {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter",
-                      {
-                        "Ref": "GoogleClientIdParameter314808B6",
-                      },
+                      ":clientId::",
                     ],
                   ],
                 },
@@ -1972,22 +2004,38 @@ exports[`Snapshot 1`] = `
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
                       {
-                        "Ref": "AWS::Partition",
+                        "Ref": "GoogleOauthSecretE885EF50",
                       },
-                      ":ssm:",
+                      ":clientSecret::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "SOCIAL_AUTH_GITHUB_CLIENT_ID",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
                       {
-                        "Ref": "AWS::Region",
+                        "Ref": "GitHubOauthSecretEE7EDD15",
                       },
-                      ":",
+                      ":clientId::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "SOCIAL_AUTH_GITHUB_CLIENT_SECRET",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
                       {
-                        "Ref": "AWS::AccountId",
+                        "Ref": "GitHubOauthSecretEE7EDD15",
                       },
-                      ":parameter",
-                      {
-                        "Ref": "GoogleClientSecretParameter5B5BDDF8",
-                      },
+                      ":clientSecret::",
                     ],
                   ],
                 },
@@ -2139,66 +2187,22 @@ exports[`Snapshot 1`] = `
             },
             {
               "Action": [
-                "ssm:DescribeParameters",
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-                "ssm:GetParameterHistory",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ssm:",
-                    {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":parameter",
-                    {
-                      "Ref": "GoogleClientIdParameter314808B6",
-                    },
-                  ],
-                ],
+                "Ref": "GoogleOauthSecretE885EF50",
               },
             },
             {
               "Action": [
-                "ssm:DescribeParameters",
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-                "ssm:GetParameterHistory",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ssm:",
-                    {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":parameter",
-                    {
-                      "Ref": "GoogleClientSecretParameter5B5BDDF8",
-                    },
-                  ],
-                ],
+                "Ref": "GitHubOauthSecretEE7EDD15",
               },
             },
           ],
