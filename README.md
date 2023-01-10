@@ -52,3 +52,7 @@ aws ecs execute-command --cluster cluster-name \
     --interactive \
     --command "python3 ./manage.py createsuperuser"
 ```
+
+## Oauth の設定
+
+CloudFormation のパラメーターから設定できるようになっているので [コンソール](https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks) からお願いします。
