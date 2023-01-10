@@ -1,0 +1,4802 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot 1`] = `
+{
+  "Conditions": {
+    "UseSocialLogin": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "GoogleClientId",
+            },
+            "N/A",
+          ],
+        },
+      ],
+    },
+  },
+  "Outputs": {
+    "CreateSuperuserCommand": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "aws ecs execute-command --cluster ",
+            {
+              "Ref": "ClusterEB0386A7",
+            },
+            " --task $(aws ecs list-tasks --cluster ",
+            {
+              "Ref": "ClusterEB0386A7",
+            },
+            " --service-name ",
+            {
+              "Fn::GetAtt": [
+                "UtilsService4816EBCE",
+                "Name",
+              ],
+            },
+            " --query "taskArns[0]" --output text) --container app --interactive --command "python3 ./manage.py createsuperuser"",
+          ],
+        ],
+      },
+    },
+    "Url": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "CDNDistributionD4FAE585",
+                "DomainName",
+              ],
+            },
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "GoogleClientId": {
+      "Default": "N/A",
+      "NoEcho": true,
+      "Type": "String",
+    },
+    "GoogleClientSecret": {
+      "Default": "N/A",
+      "NoEcho": true,
+      "Type": "String",
+    },
+  },
+  "Resources": {
+    "CDNCachePolicy0AC5FBC6": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "test/CDN/CachePolicy",
+          "DefaultTTL": 0,
+          "MaxTTL": 3600,
+          "MinTTL": 0,
+          "Name": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "AWS::StackName",
+                },
+                "-CDN-CachePolicy-",
+                {
+                  "Ref": "AWS::Region",
+                },
+              ],
+            ],
+          },
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "whitelist",
+              "Headers": [
+                "authorization",
+              ],
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "all",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "CDNDistributionD4FAE585": {
+      "Properties": {
+        "DistributionConfig": {
+          "CacheBehaviors": [
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE",
+              ],
+              "CachePolicyId": {
+                "Ref": "CDNCachePolicy0AC5FBC6",
+              },
+              "Compress": true,
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+              "PathPattern": "/api/*",
+              "TargetOriginId": "testCDNDistributionOrigin12799AB3C",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE",
+              ],
+              "CachePolicyId": {
+                "Ref": "CDNCachePolicy0AC5FBC6",
+              },
+              "Compress": true,
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+              "PathPattern": "/git/*",
+              "TargetOriginId": "testCDNDistributionOrigin12799AB3C",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE",
+              ],
+              "CachePolicyId": {
+                "Ref": "CDNCachePolicy0AC5FBC6",
+              },
+              "Compress": true,
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+              "PathPattern": "/opencv/*",
+              "TargetOriginId": "testCDNDistributionOrigin12799AB3C",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE",
+              ],
+              "CachePolicyId": {
+                "Ref": "CDNCachePolicy0AC5FBC6",
+              },
+              "Compress": true,
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+              "PathPattern": "/analytics/*",
+              "TargetOriginId": "testCDNDistributionOrigin12799AB3C",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE",
+              ],
+              "CachePolicyId": {
+                "Ref": "CDNCachePolicy0AC5FBC6",
+              },
+              "Compress": true,
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+              "PathPattern": "/admin*",
+              "TargetOriginId": "testCDNDistributionOrigin12799AB3C",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE",
+              ],
+              "CachePolicyId": {
+                "Ref": "CDNCachePolicy0AC5FBC6",
+              },
+              "Compress": true,
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+              "PathPattern": "/documentation/*",
+              "TargetOriginId": "testCDNDistributionOrigin12799AB3C",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE",
+              ],
+              "CachePolicyId": {
+                "Ref": "CDNCachePolicy0AC5FBC6",
+              },
+              "Compress": true,
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+              "PathPattern": "/django-rq*",
+              "TargetOriginId": "testCDNDistributionOrigin12799AB3C",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+          ],
+          "Comment": "test/CDN/Distribution",
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PUT",
+              "PATCH",
+              "POST",
+              "DELETE",
+            ],
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
+            "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+            "TargetOriginId": "testCDNDistributionOrigin12799AB3C",
+            "ViewerProtocolPolicy": "redirect-to-https",
+          },
+          "Enabled": true,
+          "HttpVersion": "http2and3",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "http-only",
+                "OriginSSLProtocols": [
+                  "TLSv1.2",
+                ],
+              },
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "LoadBalancerBE9EEC3A",
+                  "DNSName",
+                ],
+              },
+              "Id": "testCDNDistributionOrigin12799AB3C",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::CloudFront::Distribution",
+    },
+    "Cluster3DA9CCBA": {
+      "Properties": {
+        "CapacityProviders": [
+          "FARGATE",
+          "FARGATE_SPOT",
+        ],
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DefaultCapacityProviderStrategy": [],
+      },
+      "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+    },
+    "ClusterDefaultServiceDiscoveryNamespaceC336F9B4": {
+      "Properties": {
+        "Name": "cvat.local",
+        "Vpc": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+    },
+    "ClusterEB0386A7": {
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "enabled",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::Cluster",
+    },
+    "DatabaseB269D8BB": {
+      "DeletionPolicy": "Snapshot",
+      "Properties": {
+        "CopyTagsToSnapshot": true,
+        "DBClusterParameterGroupName": "default.aurora-postgresql14",
+        "DBSubnetGroupName": {
+          "Ref": "DatabaseSubnets56F17B9A",
+        },
+        "DatabaseName": "cvat",
+        "Engine": "aurora-postgresql",
+        "EngineVersion": "14.5",
+        "MasterUserPassword": {
+          "Fn::Join": [
+            "",
+            [
+              "{{resolve:secretsmanager:",
+              {
+                "Ref": "testDatabaseSecret69A121893fdaad7efa858a3daf9490cf0a702aeb",
+              },
+              ":SecretString:password::}}",
+            ],
+          ],
+        },
+        "MasterUsername": "postgres",
+        "Port": 5432,
+        "ServerlessV2ScalingConfiguration": {
+          "MaxCapacity": 32,
+          "MinCapacity": 0.5,
+        },
+        "StorageEncrypted": true,
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "DatabaseSecurityGroup5C91FDCB",
+              "GroupId",
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBCluster",
+      "UpdateReplacePolicy": "Snapshot",
+    },
+    "DatabaseInstance1844F58FD": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "VPCPrivateSubnet1DefaultRouteAE1D6490",
+        "VPCPrivateSubnet1RouteTableAssociation347902D1",
+        "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+        "VPCPrivateSubnet2RouteTableAssociation0C73D413",
+      ],
+      "Properties": {
+        "DBClusterIdentifier": {
+          "Ref": "DatabaseB269D8BB",
+        },
+        "DBInstanceClass": "db.serverless",
+        "DBSubnetGroupName": {
+          "Ref": "DatabaseSubnets56F17B9A",
+        },
+        "EnablePerformanceInsights": true,
+        "Engine": "aurora-postgresql",
+        "PerformanceInsightsRetentionPeriod": 7,
+      },
+      "Type": "AWS::RDS::DBInstance",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DatabaseSecretAttachmentE5D1B020": {
+      "Properties": {
+        "SecretId": {
+          "Ref": "testDatabaseSecret69A121893fdaad7efa858a3daf9490cf0a702aeb",
+        },
+        "TargetId": {
+          "Ref": "DatabaseB269D8BB",
+        },
+        "TargetType": "AWS::RDS::DBCluster",
+      },
+      "Type": "AWS::SecretsManager::SecretTargetAttachment",
+    },
+    "DatabaseSecurityGroup5C91FDCB": {
+      "Properties": {
+        "GroupDescription": "RDS security group",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "DatabaseSecurityGroupfromtestServerSecurityGroupF3EFC7E8IndirectPortF12CFC53": {
+      "Properties": {
+        "Description": "from testServerSecurityGroupF3EFC7E8:{IndirectPort}",
+        "FromPort": {
+          "Fn::GetAtt": [
+            "DatabaseB269D8BB",
+            "Endpoint.Port",
+          ],
+        },
+        "GroupId": {
+          "Fn::GetAtt": [
+            "DatabaseSecurityGroup5C91FDCB",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ServerSecurityGroupD97297FF",
+            "GroupId",
+          ],
+        },
+        "ToPort": {
+          "Fn::GetAtt": [
+            "DatabaseB269D8BB",
+            "Endpoint.Port",
+          ],
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "DatabaseSubnets56F17B9A": {
+      "Properties": {
+        "DBSubnetGroupDescription": "Subnets for Database database",
+        "SubnetIds": [
+          {
+            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+          },
+          {
+            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBSubnetGroup",
+    },
+    "FileSystem8A8E25C0": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "Encrypted": true,
+        "FileSystemTags": [
+          {
+            "Key": "Name",
+            "Value": "test/FileSystem",
+          },
+        ],
+        "ThroughputMode": "elastic",
+      },
+      "Type": "AWS::EFS::FileSystem",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "FileSystemDataAccessPoint3AB885E3": {
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "FileSystem8A8E25C0",
+        },
+        "PosixUser": {
+          "Gid": "1000",
+          "Uid": "1000",
+        },
+        "RootDirectory": {
+          "CreationInfo": {
+            "OwnerGid": "1000",
+            "OwnerUid": "1000",
+            "Permissions": "0755",
+          },
+          "Path": "/data",
+        },
+      },
+      "Type": "AWS::EFS::AccessPoint",
+    },
+    "FileSystemEfsMountTarget1586453F0": {
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "FileSystem8A8E25C0",
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "FileSystemEfsSecurityGroup212D3ACB",
+              "GroupId",
+            ],
+          },
+        ],
+        "SubnetId": {
+          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+        },
+      },
+      "Type": "AWS::EFS::MountTarget",
+    },
+    "FileSystemEfsMountTarget24B8EBB43": {
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "FileSystem8A8E25C0",
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "FileSystemEfsSecurityGroup212D3ACB",
+              "GroupId",
+            ],
+          },
+        ],
+        "SubnetId": {
+          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+        },
+      },
+      "Type": "AWS::EFS::MountTarget",
+    },
+    "FileSystemEfsSecurityGroup212D3ACB": {
+      "Properties": {
+        "GroupDescription": "test/FileSystem/EfsSecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/FileSystem",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "FileSystemEfsSecurityGroupfromtestServerSecurityGroupF3EFC7E8204991C66A99": {
+      "Properties": {
+        "Description": "from testServerSecurityGroupF3EFC7E8:2049",
+        "FromPort": 2049,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "FileSystemEfsSecurityGroup212D3ACB",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ServerSecurityGroupD97297FF",
+            "GroupId",
+          ],
+        },
+        "ToPort": 2049,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "FileSystemShareAccessPoint97E1DCEE": {
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "FileSystem8A8E25C0",
+        },
+        "PosixUser": {
+          "Gid": "1000",
+          "Uid": "1000",
+        },
+        "RootDirectory": {
+          "CreationInfo": {
+            "OwnerGid": "1000",
+            "OwnerUid": "1000",
+            "Permissions": "0755",
+          },
+          "Path": "/share",
+        },
+      },
+      "Type": "AWS::EFS::AccessPoint",
+    },
+    "GoogleClientIdParameter314808B6": {
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              "/",
+              {
+                "Ref": "AWS::StackName",
+              },
+              "/GoogleClientId",
+            ],
+          ],
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "GoogleClientId",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "GoogleClientSecretParameter5B5BDDF8": {
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              "/",
+              {
+                "Ref": "AWS::StackName",
+              },
+              "/GoogleClientSecret",
+            ],
+          ],
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "GoogleClientSecret",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "LoadBalancerBE9EEC3A": {
+      "DependsOn": [
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+        "VPCPublicSubnet2DefaultRouteB7481BBA",
+        "VPCPublicSubnet2RouteTableAssociation5A808732",
+      ],
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false",
+          },
+        ],
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerSecurityGroupA28D6DD7",
+              "GroupId",
+            ],
+          },
+        ],
+        "Subnets": [
+          {
+            "Ref": "VPCPublicSubnet1SubnetB4246D30",
+          },
+          {
+            "Ref": "VPCPublicSubnet2Subnet74179F39",
+          },
+        ],
+        "Type": "application",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+    },
+    "LoadBalancerListenerCvatServer1RuleA649186F": {
+      "Properties": {
+        "Actions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "ServerTargetGroup6B2BBA24",
+            },
+            "Type": "forward",
+          },
+        ],
+        "Conditions": [
+          {
+            "Field": "path-pattern",
+            "PathPatternConfig": {
+              "Values": [
+                "/api/*",
+                "/git/*",
+                "/opencv/*",
+                "/static/*",
+              ],
+            },
+          },
+        ],
+        "ListenerArn": {
+          "Ref": "LoadBalancerListenerE1A099B9",
+        },
+        "Priority": 20,
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+    },
+    "LoadBalancerListenerCvatServer2Rule2CF88049": {
+      "Properties": {
+        "Actions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "ServerTargetGroup6B2BBA24",
+            },
+            "Type": "forward",
+          },
+        ],
+        "Conditions": [
+          {
+            "Field": "path-pattern",
+            "PathPatternConfig": {
+              "Values": [
+                "/admin*",
+                "/documentation/*",
+                "/django-rq*",
+              ],
+            },
+          },
+        ],
+        "ListenerArn": {
+          "Ref": "LoadBalancerListenerE1A099B9",
+        },
+        "Priority": 30,
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+    },
+    "LoadBalancerListenerE1A099B9": {
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "ReactTargetGroup68C6683E",
+            },
+            "Type": "forward",
+          },
+        ],
+        "LoadBalancerArn": {
+          "Ref": "LoadBalancerBE9EEC3A",
+        },
+        "Port": 80,
+        "Protocol": "HTTP",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "LoadBalancerSecurityGroupA28D6DD7": {
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB testLoadBalancerF5615F9C",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80,
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "LoadBalancerSecurityGrouptotestReactSecurityGroup9A1570E08061D92A89": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ReactSecurityGroup7978FF19",
+            "GroupId",
+          ],
+        },
+        "FromPort": 80,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerSecurityGroupA28D6DD7",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 80,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
+    "LoadBalancerSecurityGrouptotestServerSecurityGroupF3EFC7E88080CEA7A2BB": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ServerSecurityGroupD97297FF",
+            "GroupId",
+          ],
+        },
+        "FromPort": 8080,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerSecurityGroupA28D6DD7",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8080,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
+    "OpenPolicyAgentLogs092F7DB7": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "OpenPolicyAgentSecurityGroup1F1973A9": {
+      "Properties": {
+        "GroupDescription": "test/OpenPolicyAgent/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "OpenPolicyAgentSecurityGroupfromtestServerSecurityGroupF3EFC7E8818130D47057": {
+      "Properties": {
+        "Description": "from testServerSecurityGroupF3EFC7E8:8181",
+        "FromPort": 8181,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "OpenPolicyAgentSecurityGroup1F1973A9",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ServerSecurityGroupD97297FF",
+            "GroupId",
+          ],
+        },
+        "ToPort": 8181,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "OpenPolicyAgentService4EA27903": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "OpenPolicyAgentSecurityGroup1F1973A9",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "ServiceRegistries": [
+          {
+            "ContainerName": "opa",
+            "ContainerPort": 8181,
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "OpenPolicyAgentServiceCloudmapService72757B74",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "TaskDefinition": {
+          "Ref": "OpenPolicyAgentTaskDef8F26453F",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "OpenPolicyAgentServiceCloudmapService72757B74": {
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 10,
+              "Type": "SRV",
+            },
+            {
+              "TTL": 10,
+              "Type": "A",
+            },
+          ],
+          "NamespaceId": {
+            "Fn::GetAtt": [
+              "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
+              "Id",
+            ],
+          },
+          "RoutingPolicy": "MULTIVALUE",
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 1,
+        },
+        "Name": "opa",
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
+            "Id",
+          ],
+        },
+      },
+      "Type": "AWS::ServiceDiscovery::Service",
+    },
+    "OpenPolicyAgentTaskDef8F26453F": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Command": [
+              "run",
+              "--server",
+              "--set=decision_logs.console=true",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    "--set=services.cvat.url=http://",
+                    {
+                      "Fn::GetAtt": [
+                        "ServerServiceCloudmapService5B7C0F90",
+                        "Name",
+                      ],
+                    },
+                    ".cvat.local:8080",
+                  ],
+                ],
+              },
+              "--set=bundles.cvat.service=cvat",
+              "--set=bundles.cvat.resource=/api/auth/rules",
+              "--set=bundles.cvat.polling.min_delay_seconds=5",
+              "--set=bundles.cvat.polling.max_delay_seconds=15",
+            ],
+            "Essential": true,
+            "Image": "openpolicyagent/opa:0.47.4-rootless",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "OpenPolicyAgentLogs092F7DB7",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "Name": "opa",
+            "PortMappings": [
+              {
+                "AppProtocol": "http",
+                "ContainerPort": 8181,
+                "Name": "http",
+                "Protocol": "tcp",
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "OpenPolicyAgentTaskDefExecutionRoleFFA2D62F",
+            "Arn",
+          ],
+        },
+        "Family": "testOpenPolicyAgentTaskDefF83EB455",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {},
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "OpenPolicyAgentTaskDefTaskRole5A68D9A2",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "OpenPolicyAgentTaskDefExecutionRoleDefaultPolicy9514ED55": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "OpenPolicyAgentLogs092F7DB7",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "OpenPolicyAgentTaskDefExecutionRoleDefaultPolicy9514ED55",
+        "Roles": [
+          {
+            "Ref": "OpenPolicyAgentTaskDefExecutionRoleFFA2D62F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "OpenPolicyAgentTaskDefExecutionRoleFFA2D62F": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "OpenPolicyAgentTaskDefTaskRole5A68D9A2": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ReactLogs189E5EAE": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ReactSecurityGroup7978FF19": {
+      "Properties": {
+        "GroupDescription": "test/React/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ReactSecurityGroupfromtestLoadBalancerSecurityGroupDD22F5808098CBA645": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 80,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ReactSecurityGroup7978FF19",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerSecurityGroupA28D6DD7",
+            "GroupId",
+          ],
+        },
+        "ToPort": 80,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "ReactServiceCloudmapServiceBEA56DC7": {
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 10,
+              "Type": "SRV",
+            },
+            {
+              "TTL": 10,
+              "Type": "A",
+            },
+          ],
+          "NamespaceId": {
+            "Fn::GetAtt": [
+              "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
+              "Id",
+            ],
+          },
+          "RoutingPolicy": "MULTIVALUE",
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 1,
+        },
+        "Name": "react",
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
+            "Id",
+          ],
+        },
+      },
+      "Type": "AWS::ServiceDiscovery::Service",
+    },
+    "ReactServiceFF8561E6": {
+      "DependsOn": [
+        "LoadBalancerListenerCvatServer1RuleA649186F",
+        "LoadBalancerListenerCvatServer2Rule2CF88049",
+        "LoadBalancerListenerE1A099B9",
+      ],
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "nginx",
+            "ContainerPort": 80,
+            "TargetGroupArn": {
+              "Ref": "ReactTargetGroup68C6683E",
+            },
+          },
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ReactSecurityGroup7978FF19",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "ServiceRegistries": [
+          {
+            "ContainerName": "nginx",
+            "ContainerPort": 80,
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "ReactServiceCloudmapServiceBEA56DC7",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "TaskDefinition": {
+          "Ref": "ReactTaskDef43D40311",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "ReactTargetGroup68C6683E": {
+      "Properties": {
+        "HealthCheckIntervalSeconds": 5,
+        "HealthCheckTimeoutSeconds": 2,
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "30",
+          },
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false",
+          },
+        ],
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+    },
+    "ReactTaskDef43D40311": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": "cvat/ui:dev",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "ReactLogs189E5EAE",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "Name": "nginx",
+            "PortMappings": [
+              {
+                "AppProtocol": "http",
+                "ContainerPort": 80,
+                "Name": "http",
+                "Protocol": "tcp",
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "ReactTaskDefExecutionRoleFCC446F8",
+            "Arn",
+          ],
+        },
+        "Family": "testReactTaskDefE0E1BA9E",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {},
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "ReactTaskDefTaskRoleA126EE8E",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "ReactTaskDefExecutionRoleDefaultPolicyEA7AF5C9": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ReactLogs189E5EAE",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ReactTaskDefExecutionRoleDefaultPolicyEA7AF5C9",
+        "Roles": [
+          {
+            "Ref": "ReactTaskDefExecutionRoleFCC446F8",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ReactTaskDefExecutionRoleFCC446F8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ReactTaskDefTaskRoleA126EE8E": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RedisCluster5292F556": {
+      "Properties": {
+        "CacheNodeType": "cache.t4g.micro",
+        "CacheSubnetGroupName": {
+          "Ref": "RedisSubnets445F6F85",
+        },
+        "Engine": "redis",
+        "EngineVersion": "7.0",
+        "NumCacheNodes": 1,
+        "Port": 6379,
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "RedisSecurityGroupC1E9FD21",
+              "GroupId",
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::ElastiCache::CacheCluster",
+    },
+    "RedisSecurityGroupC1E9FD21": {
+      "Properties": {
+        "GroupDescription": "test/Redis/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "RedisSecurityGroupfromtestServerSecurityGroupF3EFC7E8IndirectPort9A96D280": {
+      "Properties": {
+        "Description": "from testServerSecurityGroupF3EFC7E8:{IndirectPort}",
+        "FromPort": {
+          "Fn::GetAtt": [
+            "RedisCluster5292F556",
+            "RedisEndpoint.Port",
+          ],
+        },
+        "GroupId": {
+          "Fn::GetAtt": [
+            "RedisSecurityGroupC1E9FD21",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ServerSecurityGroupD97297FF",
+            "GroupId",
+          ],
+        },
+        "ToPort": {
+          "Fn::GetAtt": [
+            "RedisCluster5292F556",
+            "RedisEndpoint.Port",
+          ],
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "RedisSubnets445F6F85": {
+      "Properties": {
+        "Description": "Subnets for test/Redis/Cluster",
+        "SubnetIds": [
+          {
+            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+          },
+          {
+            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+          },
+        ],
+      },
+      "Type": "AWS::ElastiCache::SubnetGroup",
+    },
+    "SageMakerPolicyA8F97297": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sagemaker:ListEndpoints",
+                "sagemaker:ListModels",
+                "sagemaker:DescribeEndpoint",
+                "sagemaker:DescribeEndpointConfig",
+                "sagemaker:DescribeModel",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "SageMakerPolicyA8F97297",
+        "Roles": [
+          {
+            "Ref": "ServerlessTaskDefTaskRole8E6B5FB9",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ServerLogs243D88B8": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ServerSecurityGroupD97297FF": {
+      "Properties": {
+        "GroupDescription": "test/Server/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ServerSecurityGroupfromtestLoadBalancerSecurityGroupDD22F5808080B37BF6C4": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 8080,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ServerSecurityGroupD97297FF",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerSecurityGroupA28D6DD7",
+            "GroupId",
+          ],
+        },
+        "ToPort": 8080,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "ServerSecurityGroupfromtestOpenPolicyAgentSecurityGroup3521BC9A8080424F50C3": {
+      "Properties": {
+        "Description": "from testOpenPolicyAgentSecurityGroup3521BC9A:8080",
+        "FromPort": 8080,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ServerSecurityGroupD97297FF",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "OpenPolicyAgentSecurityGroup1F1973A9",
+            "GroupId",
+          ],
+        },
+        "ToPort": 8080,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "ServerServiceCloudmapService5B7C0F90": {
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 10,
+              "Type": "SRV",
+            },
+            {
+              "TTL": 10,
+              "Type": "A",
+            },
+          ],
+          "NamespaceId": {
+            "Fn::GetAtt": [
+              "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
+              "Id",
+            ],
+          },
+          "RoutingPolicy": "MULTIVALUE",
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 1,
+        },
+        "Name": "server",
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
+            "Id",
+          ],
+        },
+      },
+      "Type": "AWS::ServiceDiscovery::Service",
+    },
+    "ServerServiceDC94C6DC": {
+      "DependsOn": [
+        "LoadBalancerListenerCvatServer1RuleA649186F",
+        "LoadBalancerListenerCvatServer2Rule2CF88049",
+      ],
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "app",
+            "ContainerPort": 8080,
+            "TargetGroupArn": {
+              "Ref": "ServerTargetGroup6B2BBA24",
+            },
+          },
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServerSecurityGroupD97297FF",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "ServiceRegistries": [
+          {
+            "ContainerName": "app",
+            "ContainerPort": 8080,
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "ServerServiceCloudmapService5B7C0F90",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "TaskDefinition": {
+          "Ref": "ServerTaskDef33D057F4",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "ServerTargetGroup6B2BBA24": {
+      "Properties": {
+        "HealthCheckPath": "/api/server/about",
+        "HealthyThresholdCount": 2,
+        "Port": 8080,
+        "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "30",
+          },
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false",
+          },
+        ],
+        "TargetType": "ip",
+        "UnhealthyThresholdCount": 10,
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+    },
+    "ServerTaskDef33D057F4": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Command": [
+              "-c",
+              "supervisord/server.conf",
+            ],
+            "Environment": [
+              {
+                "Name": "CVAT_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "CDNDistributionD4FAE585",
+                    "DomainName",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_BASE_URL",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "https://",
+                      {
+                        "Fn::GetAtt": [
+                          "CDNDistributionD4FAE585",
+                          "DomainName",
+                        ],
+                      },
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "DJANGO_MODWSGI_EXTRA_ARGS",
+                "Value": "",
+              },
+              {
+                "Name": "ALLOWED_HOSTS",
+                "Value": "*",
+              },
+              {
+                "Name": "CVAT_REDIS_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "RedisCluster5292F556",
+                    "RedisEndpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "DatabaseB269D8BB",
+                    "Endpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "ADAPTIVE_AUTO_ANNOTATION",
+                "Value": "false",
+              },
+              {
+                "Name": "IAM_OPA_BUNDLE",
+                "Value": "1",
+              },
+              {
+                "Name": "USE_ALLAUTH_SOCIAL_ACCOUNTS",
+                "Value": {
+                  "Fn::If": [
+                    "UseSocialLogin",
+                    "True",
+                    "False",
+                  ],
+                },
+              },
+              {
+                "Name": "CLAM_AV",
+                "Value": "yes",
+              },
+              {
+                "Name": "CVAT_SERVERLESS",
+                "Value": "1",
+              },
+              {
+                "Name": "CVAT_NUCLIO_HOST",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ServerlessServiceCloudmapService91BC4AF4",
+                          "Name",
+                        ],
+                      },
+                      ".cvat.local",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_NUCLIO_PORT",
+                "Value": "8070",
+              },
+              {
+                "Name": "IAM_OPA_HOST",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "http://",
+                      {
+                        "Fn::GetAtt": [
+                          "OpenPolicyAgentServiceCloudmapService72757B74",
+                          "Name",
+                        ],
+                      },
+                      ".cvat.local:8181",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "ServerLogs243D88B8",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/home/django/data",
+                "ReadOnly": false,
+                "SourceVolume": "data",
+              },
+              {
+                "ContainerPath": "/home/django/share",
+                "ReadOnly": false,
+                "SourceVolume": "share",
+              },
+            ],
+            "Name": "app",
+            "PortMappings": [
+              {
+                "AppProtocol": "http",
+                "ContainerPort": 8080,
+                "Name": "http",
+                "Protocol": "tcp",
+              },
+            ],
+            "Secrets": [
+              {
+                "Name": "CVAT_POSTGRES_DBNAME",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":dbname::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_USER",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":username::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_PASSWORD",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":password::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "SOCIAL_AUTH_GOOGLE_CLIENT_ID",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter",
+                      {
+                        "Ref": "GoogleClientIdParameter314808B6",
+                      },
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "SOCIAL_AUTH_GOOGLE_CLIENT_SECRET",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter",
+                      {
+                        "Ref": "GoogleClientSecretParameter5B5BDDF8",
+                      },
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "512",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "ServerTaskDefExecutionRole81BEBE52",
+            "Arn",
+          ],
+        },
+        "Family": "testServerTaskDef9EA770F9",
+        "Memory": "1024",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {},
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "ServerTaskDefTaskRoleE33AA68E",
+            "Arn",
+          ],
+        },
+        "Volumes": [
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemDataAccessPoint3AB885E3",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "data",
+          },
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemShareAccessPoint97E1DCEE",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "share",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "ServerTaskDefExecutionRole81BEBE52": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ServerTaskDefExecutionRoleDefaultPolicy1A24743A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Sub": "cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ServerLogs243D88B8",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "DatabaseSecretAttachmentE5D1B020",
+              },
+            },
+            {
+              "Action": [
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter",
+                    {
+                      "Ref": "GoogleClientIdParameter314808B6",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter",
+                    {
+                      "Ref": "GoogleClientSecretParameter5B5BDDF8",
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ServerTaskDefExecutionRoleDefaultPolicy1A24743A",
+        "Roles": [
+          {
+            "Ref": "ServerTaskDefExecutionRole81BEBE52",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ServerTaskDefTaskRoleE33AA68E": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ServerlessLogs26369EBD": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ServerlessSecurityGroup434B6A58": {
+      "Properties": {
+        "GroupDescription": "test/Serverless/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "ServerlessSecurityGroupfromtestServerSecurityGroupF3EFC7E880705B14D2A0": {
+      "Properties": {
+        "Description": "from testServerSecurityGroupF3EFC7E8:8070",
+        "FromPort": 8070,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ServerlessSecurityGroup434B6A58",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ServerSecurityGroupD97297FF",
+            "GroupId",
+          ],
+        },
+        "ToPort": 8070,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "ServerlessService646EBB21": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServerlessSecurityGroup434B6A58",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "ServiceRegistries": [
+          {
+            "ContainerName": "app",
+            "ContainerPort": 8070,
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "ServerlessServiceCloudmapService91BC4AF4",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "TaskDefinition": {
+          "Ref": "ServerlessTaskDef56D673A2",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "ServerlessServiceCloudmapService91BC4AF4": {
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 10,
+              "Type": "SRV",
+            },
+            {
+              "TTL": 10,
+              "Type": "A",
+            },
+          ],
+          "NamespaceId": {
+            "Fn::GetAtt": [
+              "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
+              "Id",
+            ],
+          },
+          "RoutingPolicy": "MULTIVALUE",
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 1,
+        },
+        "Name": "serverless",
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
+            "Id",
+          ],
+        },
+      },
+      "Type": "AWS::ServiceDiscovery::Service",
+    },
+    "ServerlessTaskDef56D673A2": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:992013ea1cb7e67175a5d9208908f4fff35463a77c0b73d2291a39830daa8a11",
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "ServerlessLogs26369EBD",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "Name": "app",
+            "PortMappings": [
+              {
+                "AppProtocol": "http",
+                "ContainerPort": 8070,
+                "Name": "http",
+                "Protocol": "tcp",
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "ServerlessTaskDefExecutionRole8952FDD5",
+            "Arn",
+          ],
+        },
+        "Family": "testServerlessTaskDef0602B922",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {
+          "CpuArchitecture": "ARM64",
+        },
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "ServerlessTaskDefTaskRole8E6B5FB9",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "ServerlessTaskDefExecutionRole8952FDD5": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ServerlessTaskDefExecutionRoleDefaultPolicyC2E392F2": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Sub": "cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ServerlessLogs26369EBD",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ServerlessTaskDefExecutionRoleDefaultPolicyC2E392F2",
+        "Roles": [
+          {
+            "Ref": "ServerlessTaskDefExecutionRole8952FDD5",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ServerlessTaskDefTaskRole8E6B5FB9": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "UtilsLogs29D92105": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "UtilsService4816EBCE": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "EnableExecuteCommand": true,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServerSecurityGroupD97297FF",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "TaskDefinition": {
+          "Ref": "UtilsTaskDef531D964E",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "UtilsTaskDef531D964E": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Command": [
+              "-c",
+              "supervisord/utils.conf",
+            ],
+            "Environment": [
+              {
+                "Name": "CVAT_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "CDNDistributionD4FAE585",
+                    "DomainName",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_REDIS_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "RedisCluster5292F556",
+                    "RedisEndpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_REDIS_PASSWORD",
+                "Value": "",
+              },
+              {
+                "Name": "CVAT_POSTGRES_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "DatabaseB269D8BB",
+                    "Endpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "IAM_OPA_HOST",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "http://",
+                      {
+                        "Fn::GetAtt": [
+                          "OpenPolicyAgentServiceCloudmapService72757B74",
+                          "Name",
+                        ],
+                      },
+                      ".cvat.local:8181",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "UtilsLogs29D92105",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/home/django/data",
+                "ReadOnly": false,
+                "SourceVolume": "data",
+              },
+              {
+                "ContainerPath": "/home/django/share",
+                "ReadOnly": false,
+                "SourceVolume": "share",
+              },
+            ],
+            "Name": "app",
+            "Secrets": [
+              {
+                "Name": "CVAT_POSTGRES_DBNAME",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":dbname::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_USER",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":username::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_PASSWORD",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":password::",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "UtilsTaskDefExecutionRole9A592275",
+            "Arn",
+          ],
+        },
+        "Family": "testUtilsTaskDefD6CE5367",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {},
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "UtilsTaskDefTaskRole6AF4BF02",
+            "Arn",
+          ],
+        },
+        "Volumes": [
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemDataAccessPoint3AB885E3",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "data",
+          },
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemShareAccessPoint97E1DCEE",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "share",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "UtilsTaskDefExecutionRole9A592275": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "UtilsTaskDefExecutionRoleDefaultPolicyF76D2FDC": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Sub": "cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "UtilsLogs29D92105",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "DatabaseSecretAttachmentE5D1B020",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "UtilsTaskDefExecutionRoleDefaultPolicyF76D2FDC",
+        "Roles": [
+          {
+            "Ref": "UtilsTaskDefExecutionRole9A592275",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "UtilsTaskDefTaskRole6AF4BF02": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "UtilsTaskDefTaskRoleDefaultPolicy4D1379E0": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ssmmessages:CreateControlChannel",
+                "ssmmessages:CreateDataChannel",
+                "ssmmessages:OpenControlChannel",
+                "ssmmessages:OpenDataChannel",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": "logs:DescribeLogGroups",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "UtilsTaskDefTaskRoleDefaultPolicy4D1379E0",
+        "Roles": [
+          {
+            "Ref": "UtilsTaskDefTaskRole6AF4BF02",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "VPCB9E5F0B4": {
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/VPC",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::VPC",
+    },
+    "VPCIGWB7E252D3": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/VPC",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::InternetGateway",
+    },
+    "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VPCPublicSubnet1NATGatewayE0556630",
+        },
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027",
+        },
+        "SubnetId": {
+          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VPCPrivateSubnet1RouteTableBE8A6027": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PrivateSubnet1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VPCPrivateSubnet1Subnet8BCA10E0": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.128.0/18",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PrivateSubnet1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VPCPublicSubnet1NATGatewayE0556630",
+        },
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VPCPrivateSubnet2RouteTable0A19E10E": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PrivateSubnet2",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E",
+        },
+        "SubnetId": {
+          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VPCPrivateSubnet2SubnetCFCDAA7A": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.192.0/18",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PrivateSubnet2",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
+      "DependsOn": [
+        "VPCVPCGW99B986DC",
+      ],
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3",
+        },
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VPCPublicSubnet1EIP6AD938E8": {
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PublicSubnet1",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "VPCPublicSubnet1NATGatewayE0556630": {
+      "DependsOn": [
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+      ],
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "VPCPublicSubnet1EIP6AD938E8",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30",
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PublicSubnet1",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781",
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VPCPublicSubnet1RouteTableFEE4B781": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PublicSubnet1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VPCPublicSubnet1SubnetB4246D30": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.0.0/18",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PublicSubnet1",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
+      "DependsOn": [
+        "VPCVPCGW99B986DC",
+      ],
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3",
+        },
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "VPCPublicSubnet2RouteTable6F1A15F1": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PublicSubnet2",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "VPCPublicSubnet2RouteTableAssociation5A808732": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1",
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet2Subnet74179F39",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "VPCPublicSubnet2Subnet74179F39": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.64.0/18",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+          {
+            "Key": "Name",
+            "Value": "test/VPC/PublicSubnet2",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "VPCVPCGW99B986DC": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "VPCIGWB7E252D3",
+        },
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4",
+        },
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+    },
+    "WorkerAnnotationLogs9AF13098": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "WorkerAnnotationServiceBF79014B": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServerSecurityGroupD97297FF",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "TaskDefinition": {
+          "Ref": "WorkerAnnotationTaskDefD64AA662",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "WorkerAnnotationTaskDefD64AA662": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Command": [
+              "exec python3 ./manage.py rqworker -v 3 annotation --worker-class cvat.rqworker.DefaultWorker",
+            ],
+            "EntryPoint": [
+              "/home/django/wait-for-it.sh",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "RedisCluster5292F556",
+                        "RedisEndpoint.Address",
+                      ],
+                    },
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "RedisCluster5292F556",
+                        "RedisEndpoint.Port",
+                      ],
+                    },
+                  ],
+                ],
+              },
+              "-t",
+              "0",
+              "--",
+              "bash",
+              "-ic",
+            ],
+            "Environment": [
+              {
+                "Name": "CVAT_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "CDNDistributionD4FAE585",
+                    "DomainName",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_REDIS_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "RedisCluster5292F556",
+                    "RedisEndpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "DatabaseB269D8BB",
+                    "Endpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "IAM_OPA_HOST",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "http://",
+                      {
+                        "Fn::GetAtt": [
+                          "OpenPolicyAgentServiceCloudmapService72757B74",
+                          "Name",
+                        ],
+                      },
+                      ".cvat.local:8181",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "WorkerAnnotationLogs9AF13098",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/home/django/data",
+                "ReadOnly": false,
+                "SourceVolume": "data",
+              },
+              {
+                "ContainerPath": "/home/django/share",
+                "ReadOnly": false,
+                "SourceVolume": "share",
+              },
+            ],
+            "Name": "app",
+            "Secrets": [
+              {
+                "Name": "CVAT_POSTGRES_DBNAME",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":dbname::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_USER",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":username::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_PASSWORD",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":password::",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "WorkerAnnotationTaskDefExecutionRoleF96A8870",
+            "Arn",
+          ],
+        },
+        "Family": "testWorkerAnnotationTaskDef58ABCA5F",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {},
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "WorkerAnnotationTaskDefTaskRoleC803E10D",
+            "Arn",
+          ],
+        },
+        "Volumes": [
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemDataAccessPoint3AB885E3",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "data",
+          },
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemShareAccessPoint97E1DCEE",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "share",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "WorkerAnnotationTaskDefExecutionRoleDefaultPolicyE51704AF": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Sub": "cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "WorkerAnnotationLogs9AF13098",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "DatabaseSecretAttachmentE5D1B020",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "WorkerAnnotationTaskDefExecutionRoleDefaultPolicyE51704AF",
+        "Roles": [
+          {
+            "Ref": "WorkerAnnotationTaskDefExecutionRoleF96A8870",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "WorkerAnnotationTaskDefExecutionRoleF96A8870": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WorkerAnnotationTaskDefTaskRoleC803E10D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WorkerExportLogs6E25EC95": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "WorkerExportService609EAB4F": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServerSecurityGroupD97297FF",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "TaskDefinition": {
+          "Ref": "WorkerExportTaskDef16D5AD00",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "WorkerExportTaskDef16D5AD00": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Command": [
+              "exec python3 ./manage.py rqworker -v 3 export --worker-class cvat.rqworker.DefaultWorker",
+            ],
+            "EntryPoint": [
+              "/home/django/wait-for-it.sh",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "RedisCluster5292F556",
+                        "RedisEndpoint.Address",
+                      ],
+                    },
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "RedisCluster5292F556",
+                        "RedisEndpoint.Port",
+                      ],
+                    },
+                  ],
+                ],
+              },
+              "-t",
+              "0",
+              "--",
+              "bash",
+              "-ic",
+            ],
+            "Environment": [
+              {
+                "Name": "CVAT_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "CDNDistributionD4FAE585",
+                    "DomainName",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_REDIS_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "RedisCluster5292F556",
+                    "RedisEndpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "DatabaseB269D8BB",
+                    "Endpoint.Address",
+                  ],
+                },
+              },
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "WorkerExportLogs6E25EC95",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/home/django/data",
+                "ReadOnly": false,
+                "SourceVolume": "data",
+              },
+              {
+                "ContainerPath": "/home/django/share",
+                "ReadOnly": false,
+                "SourceVolume": "share",
+              },
+            ],
+            "Name": "app",
+            "Secrets": [
+              {
+                "Name": "CVAT_POSTGRES_DBNAME",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":dbname::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_USER",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":username::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_PASSWORD",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":password::",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "WorkerExportTaskDefExecutionRole9F29A1A3",
+            "Arn",
+          ],
+        },
+        "Family": "testWorkerExportTaskDef75724580",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {},
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "WorkerExportTaskDefTaskRole3D47912D",
+            "Arn",
+          ],
+        },
+        "Volumes": [
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemDataAccessPoint3AB885E3",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "data",
+          },
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemShareAccessPoint97E1DCEE",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "share",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "WorkerExportTaskDefExecutionRole9F29A1A3": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WorkerExportTaskDefExecutionRoleDefaultPolicyF0010E53": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Sub": "cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "WorkerExportLogs6E25EC95",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "DatabaseSecretAttachmentE5D1B020",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "WorkerExportTaskDefExecutionRoleDefaultPolicyF0010E53",
+        "Roles": [
+          {
+            "Ref": "WorkerExportTaskDefExecutionRole9F29A1A3",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "WorkerExportTaskDefTaskRole3D47912D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WorkerImportLogsBBBB1691": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "WorkerImportServiceB4147F84": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServerSecurityGroupD97297FF",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "TaskDefinition": {
+          "Ref": "WorkerImportTaskDef55357B6F",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "WorkerImportTaskDef55357B6F": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Command": [
+              "exec python3 ./manage.py rqworker -v 3 import --worker-class cvat.rqworker.DefaultWorker",
+            ],
+            "EntryPoint": [
+              "/home/django/wait-for-it.sh",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "RedisCluster5292F556",
+                        "RedisEndpoint.Address",
+                      ],
+                    },
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "RedisCluster5292F556",
+                        "RedisEndpoint.Port",
+                      ],
+                    },
+                  ],
+                ],
+              },
+              "-t",
+              "0",
+              "--",
+              "bash",
+              "-ic",
+            ],
+            "Environment": [
+              {
+                "Name": "CVAT_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "CDNDistributionD4FAE585",
+                    "DomainName",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_REDIS_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "RedisCluster5292F556",
+                    "RedisEndpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "DatabaseB269D8BB",
+                    "Endpoint.Address",
+                  ],
+                },
+              },
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "WorkerImportLogsBBBB1691",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/home/django/data",
+                "ReadOnly": false,
+                "SourceVolume": "data",
+              },
+              {
+                "ContainerPath": "/home/django/share",
+                "ReadOnly": false,
+                "SourceVolume": "share",
+              },
+            ],
+            "Name": "app",
+            "Secrets": [
+              {
+                "Name": "CVAT_POSTGRES_DBNAME",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":dbname::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_USER",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":username::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_PASSWORD",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":password::",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "WorkerImportTaskDefExecutionRole149B91C6",
+            "Arn",
+          ],
+        },
+        "Family": "testWorkerImportTaskDef7DC123F9",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {},
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "WorkerImportTaskDefTaskRole787A0D1E",
+            "Arn",
+          ],
+        },
+        "Volumes": [
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemDataAccessPoint3AB885E3",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "data",
+          },
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemShareAccessPoint97E1DCEE",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "share",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "WorkerImportTaskDefExecutionRole149B91C6": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WorkerImportTaskDefExecutionRoleDefaultPolicy1F89C6A0": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Sub": "cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "WorkerImportLogsBBBB1691",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "DatabaseSecretAttachmentE5D1B020",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "WorkerImportTaskDefExecutionRoleDefaultPolicy1F89C6A0",
+        "Roles": [
+          {
+            "Ref": "WorkerImportTaskDefExecutionRole149B91C6",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "WorkerImportTaskDefTaskRole787A0D1E": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WorkerWebhooksLogs5C3A23D1": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "WorkerWebhooksServiceEB68CE32": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "ClusterEB0386A7",
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true,
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50,
+        },
+        "DeploymentController": {
+          "Type": "ECS",
+        },
+        "EnableECSManagedTags": true,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServerSecurityGroupD97297FF",
+                  "GroupId",
+                ],
+              },
+            ],
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
+              },
+            ],
+          },
+        },
+        "PropagateTags": "SERVICE",
+        "TaskDefinition": {
+          "Ref": "WorkerWebhooksTaskDefA8F83A3B",
+        },
+      },
+      "Type": "AWS::ECS::Service",
+    },
+    "WorkerWebhooksTaskDefA8F83A3B": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Command": [
+              "exec python3 ./manage.py rqworker -v 3 webhooks",
+            ],
+            "EntryPoint": [
+              "/home/django/wait-for-it.sh",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "RedisCluster5292F556",
+                        "RedisEndpoint.Address",
+                      ],
+                    },
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "RedisCluster5292F556",
+                        "RedisEndpoint.Port",
+                      ],
+                    },
+                  ],
+                ],
+              },
+              "-t",
+              "0",
+              "--",
+              "bash",
+              "-ic",
+            ],
+            "Environment": [
+              {
+                "Name": "CVAT_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "CDNDistributionD4FAE585",
+                    "DomainName",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_REDIS_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "RedisCluster5292F556",
+                    "RedisEndpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_HOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "DatabaseB269D8BB",
+                    "Endpoint.Address",
+                  ],
+                },
+              },
+              {
+                "Name": "IAM_OPA_HOST",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "http://",
+                      {
+                        "Fn::GetAtt": [
+                          "OpenPolicyAgentServiceCloudmapService72757B74",
+                          "Name",
+                        ],
+                      },
+                      ".cvat.local:8181",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "WorkerWebhooksLogs5C3A23D1",
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region",
+                },
+                "awslogs-stream-prefix": "ecs",
+              },
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/home/django/data",
+                "ReadOnly": false,
+                "SourceVolume": "data",
+              },
+              {
+                "ContainerPath": "/home/django/share",
+                "ReadOnly": false,
+                "SourceVolume": "share",
+              },
+            ],
+            "Name": "app",
+            "Secrets": [
+              {
+                "Name": "CVAT_POSTGRES_DBNAME",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":dbname::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_USER",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":username::",
+                    ],
+                  ],
+                },
+              },
+              {
+                "Name": "CVAT_POSTGRES_PASSWORD",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "DatabaseSecretAttachmentE5D1B020",
+                      },
+                      ":password::",
+                    ],
+                  ],
+                },
+              },
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 65536,
+                "Name": "nofile",
+                "SoftLimit": 65536,
+              },
+            ],
+          },
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "WorkerWebhooksTaskDefExecutionRole16CBE53A",
+            "Arn",
+          ],
+        },
+        "Family": "testWorkerWebhooksTaskDef966F1DA8",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE",
+        ],
+        "RuntimePlatform": {},
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "WorkerWebhooksTaskDefTaskRoleB0A2D176",
+            "Arn",
+          ],
+        },
+        "Volumes": [
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemDataAccessPoint3AB885E3",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "data",
+          },
+          {
+            "EFSVolumeConfiguration": {
+              "AuthorizationConfig": {
+                "AccessPointId": {
+                  "Ref": "FileSystemShareAccessPoint97E1DCEE",
+                },
+              },
+              "FilesystemId": {
+                "Ref": "FileSystem8A8E25C0",
+              },
+              "RootDirectory": "/",
+              "TransitEncryption": "ENABLED",
+            },
+            "Name": "share",
+          },
+        ],
+      },
+      "Type": "AWS::ECS::TaskDefinition",
+    },
+    "WorkerWebhooksTaskDefExecutionRole16CBE53A": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WorkerWebhooksTaskDefExecutionRoleDefaultPolicyB2129442": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Sub": "cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "WorkerWebhooksLogs5C3A23D1",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "DatabaseSecretAttachmentE5D1B020",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "WorkerWebhooksTaskDefExecutionRoleDefaultPolicyB2129442",
+        "Roles": [
+          {
+            "Ref": "WorkerWebhooksTaskDefExecutionRole16CBE53A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "WorkerWebhooksTaskDefTaskRoleB0A2D176": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "testDatabaseSecret69A121893fdaad7efa858a3daf9490cf0a702aeb": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Generated by the CDK for stack: ",
+              {
+                "Ref": "AWS::StackName",
+              },
+            ],
+          ],
+        },
+        "GenerateSecretString": {
+          "ExcludeCharacters": " %+~\`#$&*()|[]{}:;<>?!'/@"\\",
+          "GenerateStringKey": "password",
+          "PasswordLength": 30,
+          "SecretStringTemplate": "{"username":"postgres"}",
+        },
+      },
+      "Type": "AWS::SecretsManager::Secret",
+      "UpdateReplacePolicy": "Delete",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
