@@ -740,6 +740,35 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
     },
+    "LoadBalancerListenerDisableSelfRegistrationRule9A0B1B1E": {
+      "Properties": {
+        "Actions": [
+          {
+            "FixedResponseConfig": {
+              "ContentType": "text/plain",
+              "MessageBody": "Self-registration is not allowed",
+              "StatusCode": "403",
+            },
+            "Type": "fixed-response",
+          },
+        ],
+        "Conditions": [
+          {
+            "Field": "path-pattern",
+            "PathPatternConfig": {
+              "Values": [
+                "/api/auth/register*",
+              ],
+            },
+          },
+        ],
+        "ListenerArn": {
+          "Ref": "LoadBalancerListenerE1A099B9",
+        },
+        "Priority": 1,
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+    },
     "LoadBalancerListenerE1A099B9": {
       "Properties": {
         "DefaultActions": [
@@ -1184,6 +1213,7 @@ exports[`Snapshot 1`] = `
       "DependsOn": [
         "LoadBalancerListenerCvatServer1RuleA649186F",
         "LoadBalancerListenerCvatServer2Rule2CF88049",
+        "LoadBalancerListenerDisableSelfRegistrationRule9A0B1B1E",
         "LoadBalancerListenerE1A099B9",
       ],
       "Properties": {

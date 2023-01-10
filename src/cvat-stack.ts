@@ -361,6 +361,17 @@ export class CvatStack extends cdk.Stack {
       ])],
     });
 
+    listener.addAction('DisableSelfRegistration', {
+      priority: 1,
+      action: elb.ListenerAction.fixedResponse(403, {
+        contentType: 'text/plain',
+        messageBody: 'Self-registration is not allowed',
+      }),
+      conditions: [elb.ListenerCondition.pathPatterns([
+        '/api/auth/register*',
+      ])],
+    });
+
     const cvatUtilsTaskId = `$(aws ecs list-tasks --cluster ${cluster.clusterName} --service-name ${cvatUtils.service.serviceName} --query "taskArns[0]" --output text)`;
     new cdk.CfnOutput(this, 'CreateSuperuserCommand', { value: `aws ecs execute-command --cluster ${cluster.clusterName} --task ${cvatUtilsTaskId} --container app --interactive --command "python3 ./manage.py createsuperuser"` });
     new cdk.CfnOutput(this, 'Url', { value: `https://${cdn.distribution.distributionDomainName}` });
