@@ -37,6 +37,14 @@ npx projen build
 npx projen deploy
 ```
 
+#### CDK Bootstrap
+
+デプロイ先の AWS アカウント/リージョン で初めて CDK を使う場合は Bootstrap が必要。Bootstrap コマンドを実行することで必要な S3 Bucket や IAM Role が作成される。
+
+```bash
+npx cdk aws://123456789012/us-west-2
+```
+
 ## Superuser の作成
 
 Django のカスタムコマンド `python3 ~/manage.py createsuperuser` で作成する必要がある。
