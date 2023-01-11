@@ -31,7 +31,6 @@ export class CvatStack extends cdk.Stack {
     const cvatImage = ecs.ContainerImage.fromAsset('./containers/cvat-server', {
       buildArgs: {
         CVAT_VERSION: 'dev',
-        BUILD_DATE: '20230110',
       },
     });
 
@@ -103,12 +102,9 @@ export class CvatStack extends cdk.Stack {
       serviceName: 'serverless',
       cluster,
       containerOptions: {
-        image: ecs.ContainerImage.fromAsset('./containers/cvat-serverless', {
-          platform: Platform.LINUX_ARM64,
-        }),
+        image: ecs.ContainerImage.fromAsset('./containers/cvat-serverless'),
       },
       containerPort: 8070,
-      cpuArchitecture: ecs.CpuArchitecture.ARM64,
     });
     cvatServerless.taskDefinition.taskRole.attachInlinePolicy(new iam.Policy(this, 'SageMakerPolicy', {
       statements: [

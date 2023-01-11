@@ -1906,7 +1906,7 @@ exports[`Snapshot 1`] = `
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -2377,7 +2377,7 @@ exports[`Snapshot 1`] = `
           {
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:992013ea1cb7e67175a5d9208908f4fff35463a77c0b73d2291a39830daa8a11",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:b1d1d687cd18d08253d55bad154d2d4f8ea09284941a5f2b82037a32f94b398e",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -2422,9 +2422,7 @@ exports[`Snapshot 1`] = `
         "RequiresCompatibilities": [
           "FARGATE",
         ],
-        "RuntimePlatform": {
-          "CpuArchitecture": "ARM64",
-        },
+        "RuntimePlatform": {},
         "TaskRoleArn": {
           "Fn::GetAtt": [
             "ServerlessTaskDefTaskRole8E6B5FB9",
@@ -2649,7 +2647,7 @@ exports[`Snapshot 1`] = `
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -3426,7 +3424,7 @@ exports[`Snapshot 1`] = `
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -3790,7 +3788,7 @@ exports[`Snapshot 1`] = `
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -4154,7 +4152,7 @@ exports[`Snapshot 1`] = `
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -4536,7 +4534,7 @@ exports[`Snapshot 1`] = `
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:9b4acf96f693b18e7b978da26b4e47ff5482abf22ab0f1bdaf9f12bc47256580",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
