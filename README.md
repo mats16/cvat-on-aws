@@ -1,6 +1,6 @@
-# CVAT on AWS
+# Computer Vision Annotation Tool (CVAT) on AWS
 
-CVAT を AWS 上で動かすためのテンプレート
+The template to run [Computer Vision Annotation Tool (CVAT)](https://github.com/opencv/cvat) on AWS.
 
 ## デプロイ方法
 
