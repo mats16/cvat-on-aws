@@ -10,7 +10,7 @@ Node.js や AWS CLI, Docker が必要だが、[devcontainer](./.devcontainer.jso
 
 ### AWS のクレデンシャルの設定
 
-Turing は AWS の [IAM Identity Center](https://aws.amazon.com/jp/iam/identity-center/) を利用しているため、SSO の設定が必要。
+[IAM Identity Center](https://aws.amazon.com/jp/iam/identity-center/) を利用している場合、SSO の設定が必要。
 
 ```bash
 aws configure sso --profile default
