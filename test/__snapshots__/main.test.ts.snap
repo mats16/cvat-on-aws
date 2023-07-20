@@ -1414,7 +1414,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "512",
+        "Cpu": "256",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "ReactTaskDefExecutionRoleFCC446F8",
@@ -1422,7 +1422,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testReactTaskDefE0E1BA9E",
-        "Memory": "1024",
+        "Memory": "512",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",

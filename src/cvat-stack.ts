@@ -317,6 +317,8 @@ export class CvatStack extends cdk.Stack {
     /** CVAT UI */
     const react = new HttpFargateService(this, 'React', {
       cluster,
+      cpu: 256,
+      memoryLimitMiB: 512,
       containerOptions: {
         containerName: 'nginx',
         image: uiImage,
