@@ -49,7 +49,7 @@ npx cdk bootstrap aws://123456789012/us-west-2
 
 Django のカスタムコマンド `python3 ~/manage.py createsuperuser` で作成する必要がある。
 
-ECS では [ECS Exec](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/userguide/ecs-exec.html) を利用することでコンテナ内でコマンドを実行する小tができるのでこれを利用する。実行には **cluster-name** と **task-id** が必要なため、[ECS コンソール](https://us-west-2.console.aws.amazon.com/ecs/v2/clusters?region=us-west-2) を開き、**cluster-name** と `CVAT-UtilsService` の **task-id** を確認する。
+ECS では [ECS Exec](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/userguide/ecs-exec.html) を利用することでコンテナ内でコマンドを実行することができるのでこれを利用する。実行には **cluster-name** と **task-id** が必要なため、[ECS コンソール](https://us-west-2.console.aws.amazon.com/ecs/v2/clusters?region=us-west-2) を開き、**cluster-name** と `CVAT-UtilsService` の **task-id** を確認する。
 
 また Session Manager plugin のインストールが必要なため、[ドキュメント](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html#install-plugin-debian)を参考に入れておく。
 

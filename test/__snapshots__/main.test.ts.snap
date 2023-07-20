@@ -350,7 +350,7 @@ exports[`Snapshot 1`] = `
     },
     "ClusterDefaultServiceDiscoveryNamespaceC336F9B4": {
       "Properties": {
-        "Name": "cvat.local",
+        "Name": "cvat.internal",
         "Vpc": {
           "Ref": "VPCB9E5F0B4",
         },
@@ -362,23 +362,23 @@ exports[`Snapshot 1`] = `
         "ClusterSettings": [
           {
             "Name": "containerInsights",
-            "Value": "enabled",
+            "Value": "disabled",
           },
         ],
       },
       "Type": "AWS::ECS::Cluster",
     },
     "DatabaseB269D8BB": {
-      "DeletionPolicy": "Snapshot",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "CopyTagsToSnapshot": true,
-        "DBClusterParameterGroupName": "default.aurora-postgresql14",
+        "DBClusterParameterGroupName": "default.aurora-postgresql15",
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A",
         },
         "DatabaseName": "cvat",
         "Engine": "aurora-postgresql",
-        "EngineVersion": "14.5",
+        "EngineVersion": "15.3",
         "MasterUserPassword": {
           "Fn::Join": [
             "",
@@ -394,7 +394,7 @@ exports[`Snapshot 1`] = `
         "MasterUsername": "postgres",
         "Port": 5432,
         "ServerlessV2ScalingConfiguration": {
-          "MaxCapacity": 32,
+          "MaxCapacity": 8,
           "MinCapacity": 0.5,
         },
         "StorageEncrypted": true,
@@ -408,9 +408,9 @@ exports[`Snapshot 1`] = `
         ],
       },
       "Type": "AWS::RDS::DBCluster",
-      "UpdateReplacePolicy": "Snapshot",
+      "UpdateReplacePolicy": "Delete",
     },
-    "DatabaseInstance1844F58FD": {
+    "DatabaseInstance14A23AADF": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
         "VPCPrivateSubnet1DefaultRouteAE1D6490",
@@ -423,12 +423,8 @@ exports[`Snapshot 1`] = `
           "Ref": "DatabaseB269D8BB",
         },
         "DBInstanceClass": "db.serverless",
-        "DBSubnetGroupName": {
-          "Ref": "DatabaseSubnets56F17B9A",
-        },
-        "EnablePerformanceInsights": true,
         "Engine": "aurora-postgresql",
-        "PerformanceInsightsRetentionPeriod": 7,
+        "PromotionTier": 0,
       },
       "Type": "AWS::RDS::DBInstance",
       "UpdateReplacePolicy": "Delete",
@@ -523,6 +519,12 @@ exports[`Snapshot 1`] = `
     },
     "FileSystemDataAccessPoint3AB885E3": {
       "Properties": {
+        "AccessPointTags": [
+          {
+            "Key": "Name",
+            "Value": "test/FileSystem/DataAccessPoint",
+          },
+        ],
         "FileSystemId": {
           "Ref": "FileSystem8A8E25C0",
         },
@@ -624,6 +626,12 @@ exports[`Snapshot 1`] = `
     },
     "FileSystemShareAccessPoint97E1DCEE": {
       "Properties": {
+        "AccessPointTags": [
+          {
+            "Key": "Name",
+            "Value": "test/FileSystem/ShareAccessPoint",
+          },
+        ],
         "FileSystemId": {
           "Ref": "FileSystem8A8E25C0",
         },
@@ -937,11 +945,19 @@ exports[`Snapshot 1`] = `
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "OpenPolicyAgentService4EA27903": {
+      "DependsOn": [
+        "OpenPolicyAgentTaskDefTaskRole5A68D9A2",
+      ],
       "Properties": {
         "Cluster": {
           "Ref": "ClusterEB0386A7",
         },
         "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false,
+          },
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true,
@@ -995,6 +1011,9 @@ exports[`Snapshot 1`] = `
       "Type": "AWS::ECS::Service",
     },
     "OpenPolicyAgentServiceCloudmapService72757B74": {
+      "DependsOn": [
+        "OpenPolicyAgentTaskDefTaskRole5A68D9A2",
+      ],
       "Properties": {
         "DnsConfig": {
           "DnsRecords": [
@@ -1035,7 +1054,7 @@ exports[`Snapshot 1`] = `
             "Command": [
               "run",
               "--server",
-              "--set=decision_logs.console=true",
+              "--log-level=error",
               {
                 "Fn::Join": [
                   "",
@@ -1047,7 +1066,7 @@ exports[`Snapshot 1`] = `
                         "Name",
                       ],
                     },
-                    ".cvat.local:8080",
+                    ".cvat.internal:8080",
                   ],
                 ],
               },
@@ -1088,7 +1107,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "256",
+        "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "OpenPolicyAgentTaskDefExecutionRoleFFA2D62F",
@@ -1096,7 +1115,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testOpenPolicyAgentTaskDefF83EB455",
-        "Memory": "512",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
@@ -1220,6 +1239,9 @@ exports[`Snapshot 1`] = `
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "ReactServiceCloudmapServiceBEA56DC7": {
+      "DependsOn": [
+        "ReactTaskDefTaskRoleA126EE8E",
+      ],
       "Properties": {
         "DnsConfig": {
           "DnsRecords": [
@@ -1259,12 +1281,18 @@ exports[`Snapshot 1`] = `
         "LoadBalancerListenerCvatServer2Rule2CF88049",
         "LoadBalancerListenerDisableSelfRegistrationRule9A0B1B1E",
         "LoadBalancerListenerE1A099B9",
+        "ReactTaskDefTaskRoleA126EE8E",
       ],
       "Properties": {
         "Cluster": {
           "Ref": "ClusterEB0386A7",
         },
         "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false,
+          },
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true,
@@ -1386,7 +1414,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "256",
+        "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "ReactTaskDefExecutionRoleFCC446F8",
@@ -1394,7 +1422,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testReactTaskDefE0E1BA9E",
-        "Memory": "512",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
@@ -1554,33 +1582,6 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::ElastiCache::SubnetGroup",
     },
-    "SageMakerPolicyA8F97297": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "sagemaker:ListEndpoints",
-                "sagemaker:ListModels",
-                "sagemaker:DescribeEndpoint",
-                "sagemaker:DescribeEndpointConfig",
-                "sagemaker:DescribeModel",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "SageMakerPolicyA8F97297",
-        "Roles": [
-          {
-            "Ref": "ServerlessTaskDefTaskRole8E6B5FB9",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "ServerLogs243D88B8": {
       "DeletionPolicy": "Delete",
       "Properties": {
@@ -1648,6 +1649,10 @@ exports[`Snapshot 1`] = `
       "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "ServerServiceCloudmapService5B7C0F90": {
+      "DependsOn": [
+        "DatabaseInstance14A23AADF",
+        "ServerTaskDefTaskRoleE33AA68E",
+      ],
       "Properties": {
         "DnsConfig": {
           "DnsRecords": [
@@ -1683,14 +1688,21 @@ exports[`Snapshot 1`] = `
     },
     "ServerServiceDC94C6DC": {
       "DependsOn": [
+        "DatabaseInstance14A23AADF",
         "LoadBalancerListenerCvatServer1RuleA649186F",
         "LoadBalancerListenerCvatServer2Rule2CF88049",
+        "ServerTaskDefTaskRoleE33AA68E",
       ],
       "Properties": {
         "Cluster": {
           "Ref": "ClusterEB0386A7",
         },
         "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false,
+          },
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true,
@@ -1781,9 +1793,8 @@ exports[`Snapshot 1`] = `
       "Properties": {
         "ContainerDefinitions": [
           {
-            "Command": [
-              "-c",
-              "supervisord/server.conf",
+            "EntryPoint": [
+              "/home/django/backend_entrypoint.sh",
             ],
             "Environment": [
               {
@@ -1792,23 +1803,6 @@ exports[`Snapshot 1`] = `
                   "Fn::GetAtt": [
                     "CDNDistributionD4FAE585",
                     "DomainName",
-                  ],
-                },
-              },
-              {
-                "Name": "CVAT_BASE_URL",
-                "Value": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "https://",
-                      {
-                        "Fn::GetAtt": [
-                          "CDNDistributionD4FAE585",
-                          "DomainName",
-                        ],
-                      },
-                    ],
                   ],
                 },
               },
@@ -1847,6 +1841,31 @@ exports[`Snapshot 1`] = `
                 "Value": "1",
               },
               {
+                "Name": "NUMPROCS",
+                "Value": "2",
+              },
+              {
+                "Name": "CVAT_ANALYTICS",
+                "Value": "0",
+              },
+              {
+                "Name": "CVAT_BASE_URL",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "https://",
+                      {
+                        "Fn::GetAtt": [
+                          "CDNDistributionD4FAE585",
+                          "DomainName",
+                        ],
+                      },
+                    ],
+                  ],
+                },
+              },
+              {
                 "Name": "USE_ALLAUTH_SOCIAL_ACCOUNTS",
                 "Value": {
                   "Fn::If": [
@@ -1856,57 +1875,10 @@ exports[`Snapshot 1`] = `
                   ],
                 },
               },
-              {
-                "Name": "CLAM_AV",
-                "Value": "yes",
-              },
-              {
-                "Name": "CVAT_SERVERLESS",
-                "Value": "1",
-              },
-              {
-                "Name": "CVAT_NUCLIO_HOST",
-                "Value": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ServerlessServiceCloudmapService91BC4AF4",
-                          "Name",
-                        ],
-                      },
-                      ".cvat.local",
-                    ],
-                  ],
-                },
-              },
-              {
-                "Name": "CVAT_NUCLIO_PORT",
-                "Value": "8070",
-              },
-              {
-                "Name": "IAM_OPA_HOST",
-                "Value": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "http://",
-                      {
-                        "Fn::GetAtt": [
-                          "OpenPolicyAgentServiceCloudmapService72757B74",
-                          "Name",
-                        ],
-                      },
-                      ".cvat.local:8181",
-                    ],
-                  ],
-                },
-              },
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:8d6974f621b157bc96bb9063c8609d3335893986b4742ac9befb9e656718a848",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -2050,7 +2022,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "512",
+        "Cpu": "1024",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "ServerTaskDefExecutionRole81BEBE52",
@@ -2058,7 +2030,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testServerTaskDef9EA770F9",
-        "Memory": "1024",
+        "Memory": "2048",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
@@ -2234,303 +2206,6 @@ exports[`Snapshot 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "ServerlessLogs26369EBD": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "RetentionInDays": 30,
-      },
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "ServerlessSecurityGroup434B6A58": {
-      "Properties": {
-        "GroupDescription": "test/Serverless/SecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1",
-          },
-        ],
-        "VpcId": {
-          "Ref": "VPCB9E5F0B4",
-        },
-      },
-      "Type": "AWS::EC2::SecurityGroup",
-    },
-    "ServerlessSecurityGroupfromtestServerSecurityGroupF3EFC7E880705B14D2A0": {
-      "Properties": {
-        "Description": "from testServerSecurityGroupF3EFC7E8:8070",
-        "FromPort": 8070,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ServerlessSecurityGroup434B6A58",
-            "GroupId",
-          ],
-        },
-        "IpProtocol": "tcp",
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ServerSecurityGroupD97297FF",
-            "GroupId",
-          ],
-        },
-        "ToPort": 8070,
-      },
-      "Type": "AWS::EC2::SecurityGroupIngress",
-    },
-    "ServerlessService646EBB21": {
-      "Properties": {
-        "Cluster": {
-          "Ref": "ClusterEB0386A7",
-        },
-        "DeploymentConfiguration": {
-          "DeploymentCircuitBreaker": {
-            "Enable": true,
-            "Rollback": true,
-          },
-          "MaximumPercent": 200,
-          "MinimumHealthyPercent": 50,
-        },
-        "DeploymentController": {
-          "Type": "ECS",
-        },
-        "EnableECSManagedTags": true,
-        "LaunchType": "FARGATE",
-        "NetworkConfiguration": {
-          "AwsvpcConfiguration": {
-            "AssignPublicIp": "DISABLED",
-            "SecurityGroups": [
-              {
-                "Fn::GetAtt": [
-                  "ServerlessSecurityGroup434B6A58",
-                  "GroupId",
-                ],
-              },
-            ],
-            "Subnets": [
-              {
-                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0",
-              },
-              {
-                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A",
-              },
-            ],
-          },
-        },
-        "PropagateTags": "SERVICE",
-        "ServiceRegistries": [
-          {
-            "ContainerName": "app",
-            "ContainerPort": 8070,
-            "RegistryArn": {
-              "Fn::GetAtt": [
-                "ServerlessServiceCloudmapService91BC4AF4",
-                "Arn",
-              ],
-            },
-          },
-        ],
-        "TaskDefinition": {
-          "Ref": "ServerlessTaskDef56D673A2",
-        },
-      },
-      "Type": "AWS::ECS::Service",
-    },
-    "ServerlessServiceCloudmapService91BC4AF4": {
-      "Properties": {
-        "DnsConfig": {
-          "DnsRecords": [
-            {
-              "TTL": 10,
-              "Type": "SRV",
-            },
-            {
-              "TTL": 10,
-              "Type": "A",
-            },
-          ],
-          "NamespaceId": {
-            "Fn::GetAtt": [
-              "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
-              "Id",
-            ],
-          },
-          "RoutingPolicy": "MULTIVALUE",
-        },
-        "HealthCheckCustomConfig": {
-          "FailureThreshold": 1,
-        },
-        "Name": "serverless",
-        "NamespaceId": {
-          "Fn::GetAtt": [
-            "ClusterDefaultServiceDiscoveryNamespaceC336F9B4",
-            "Id",
-          ],
-        },
-      },
-      "Type": "AWS::ServiceDiscovery::Service",
-    },
-    "ServerlessTaskDef56D673A2": {
-      "Properties": {
-        "ContainerDefinitions": [
-          {
-            "Essential": true,
-            "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:b1d1d687cd18d08253d55bad154d2d4f8ea09284941a5f2b82037a32f94b398e",
-            },
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "ServerlessLogs26369EBD",
-                },
-                "awslogs-region": {
-                  "Ref": "AWS::Region",
-                },
-                "awslogs-stream-prefix": "ecs",
-              },
-            },
-            "Name": "app",
-            "PortMappings": [
-              {
-                "AppProtocol": "http",
-                "ContainerPort": 8070,
-                "Name": "http",
-                "Protocol": "tcp",
-              },
-            ],
-            "Ulimits": [
-              {
-                "HardLimit": 65536,
-                "Name": "nofile",
-                "SoftLimit": 65536,
-              },
-            ],
-          },
-        ],
-        "Cpu": "256",
-        "ExecutionRoleArn": {
-          "Fn::GetAtt": [
-            "ServerlessTaskDefExecutionRole8952FDD5",
-            "Arn",
-          ],
-        },
-        "Family": "testServerlessTaskDef0602B922",
-        "Memory": "512",
-        "NetworkMode": "awsvpc",
-        "RequiresCompatibilities": [
-          "FARGATE",
-        ],
-        "RuntimePlatform": {},
-        "TaskRoleArn": {
-          "Fn::GetAtt": [
-            "ServerlessTaskDefTaskRole8E6B5FB9",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::ECS::TaskDefinition",
-    },
-    "ServerlessTaskDefExecutionRole8952FDD5": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ecs-tasks.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ServerlessTaskDefExecutionRoleDefaultPolicyC2E392F2": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":repository/",
-                    {
-                      "Fn::Sub": "cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}",
-                    },
-                  ],
-                ],
-              },
-            },
-            {
-              "Action": "ecr:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "ServerlessLogs26369EBD",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ServerlessTaskDefExecutionRoleDefaultPolicyC2E392F2",
-        "Roles": [
-          {
-            "Ref": "ServerlessTaskDefExecutionRole8952FDD5",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ServerlessTaskDefTaskRole8E6B5FB9": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ecs-tasks.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
     "UtilsLogs29D92105": {
       "DeletionPolicy": "Delete",
       "Properties": {
@@ -2540,11 +2215,26 @@ exports[`Snapshot 1`] = `
       "UpdateReplacePolicy": "Delete",
     },
     "UtilsService4816EBCE": {
+      "DependsOn": [
+        "UtilsTaskDefTaskRoleDefaultPolicy4D1379E0",
+        "UtilsTaskDefTaskRole6AF4BF02",
+      ],
       "Properties": {
+        "CapacityProviderStrategy": [
+          {
+            "CapacityProvider": "FARGATE_SPOT",
+            "Weight": 1,
+          },
+        ],
         "Cluster": {
           "Ref": "ClusterEB0386A7",
         },
         "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false,
+          },
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true,
@@ -2626,28 +2316,10 @@ exports[`Snapshot 1`] = `
                   ],
                 },
               },
-              {
-                "Name": "IAM_OPA_HOST",
-                "Value": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "http://",
-                      {
-                        "Fn::GetAtt": [
-                          "OpenPolicyAgentServiceCloudmapService72757B74",
-                          "Name",
-                        ],
-                      },
-                      ".cvat.local:8181",
-                    ],
-                  ],
-                },
-              },
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:8d6974f621b157bc96bb9063c8609d3335893986b4742ac9befb9e656718a848",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -2727,7 +2399,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "256",
+        "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "UtilsTaskDefExecutionRole9A592275",
@@ -2735,7 +2407,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testUtilsTaskDefD6CE5367",
-        "Memory": "512",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
@@ -3295,11 +2967,25 @@ exports[`Snapshot 1`] = `
       "UpdateReplacePolicy": "Delete",
     },
     "WorkerAnnotationServiceBF79014B": {
+      "DependsOn": [
+        "WorkerAnnotationTaskDefTaskRoleC803E10D",
+      ],
       "Properties": {
+        "CapacityProviderStrategy": [
+          {
+            "CapacityProvider": "FARGATE_SPOT",
+            "Weight": 1,
+          },
+        ],
         "Cluster": {
           "Ref": "ClusterEB0386A7",
         },
         "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false,
+          },
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true,
@@ -3345,35 +3031,8 @@ exports[`Snapshot 1`] = `
         "ContainerDefinitions": [
           {
             "Command": [
-              "exec python3 ./manage.py rqworker -v 3 annotation --worker-class cvat.rqworker.DefaultWorker",
-            ],
-            "EntryPoint": [
-              "/home/django/wait-for-it.sh",
-              {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "RedisCluster5292F556",
-                        "RedisEndpoint.Address",
-                      ],
-                    },
-                    ":",
-                    {
-                      "Fn::GetAtt": [
-                        "RedisCluster5292F556",
-                        "RedisEndpoint.Port",
-                      ],
-                    },
-                  ],
-                ],
-              },
-              "-t",
-              "0",
-              "--",
-              "bash",
-              "-ic",
+              "-c",
+              "supervisord/worker.annotation.conf",
             ],
             "Environment": [
               {
@@ -3403,28 +3062,10 @@ exports[`Snapshot 1`] = `
                   ],
                 },
               },
-              {
-                "Name": "IAM_OPA_HOST",
-                "Value": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "http://",
-                      {
-                        "Fn::GetAtt": [
-                          "OpenPolicyAgentServiceCloudmapService72757B74",
-                          "Name",
-                        ],
-                      },
-                      ".cvat.local:8181",
-                    ],
-                  ],
-                },
-              },
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:8d6974f621b157bc96bb9063c8609d3335893986b4742ac9befb9e656718a848",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -3504,7 +3145,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "256",
+        "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "WorkerAnnotationTaskDefExecutionRoleF96A8870",
@@ -3512,7 +3153,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testWorkerAnnotationTaskDef58ABCA5F",
-        "Memory": "512",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
@@ -3677,11 +3318,25 @@ exports[`Snapshot 1`] = `
       "UpdateReplacePolicy": "Delete",
     },
     "WorkerExportService609EAB4F": {
+      "DependsOn": [
+        "WorkerExportTaskDefTaskRole3D47912D",
+      ],
       "Properties": {
+        "CapacityProviderStrategy": [
+          {
+            "CapacityProvider": "FARGATE_SPOT",
+            "Weight": 1,
+          },
+        ],
         "Cluster": {
           "Ref": "ClusterEB0386A7",
         },
         "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false,
+          },
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true,
@@ -3727,35 +3382,8 @@ exports[`Snapshot 1`] = `
         "ContainerDefinitions": [
           {
             "Command": [
-              "exec python3 ./manage.py rqworker -v 3 export --worker-class cvat.rqworker.DefaultWorker",
-            ],
-            "EntryPoint": [
-              "/home/django/wait-for-it.sh",
-              {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "RedisCluster5292F556",
-                        "RedisEndpoint.Address",
-                      ],
-                    },
-                    ":",
-                    {
-                      "Fn::GetAtt": [
-                        "RedisCluster5292F556",
-                        "RedisEndpoint.Port",
-                      ],
-                    },
-                  ],
-                ],
-              },
-              "-t",
-              "0",
-              "--",
-              "bash",
-              "-ic",
+              "-c",
+              "supervisord/worker.export.conf",
             ],
             "Environment": [
               {
@@ -3788,7 +3416,7 @@ exports[`Snapshot 1`] = `
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:8d6974f621b157bc96bb9063c8609d3335893986b4742ac9befb9e656718a848",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -3868,7 +3496,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "256",
+        "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "WorkerExportTaskDefExecutionRole9F29A1A3",
@@ -3876,7 +3504,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testWorkerExportTaskDef75724580",
-        "Memory": "512",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
@@ -4041,11 +3669,25 @@ exports[`Snapshot 1`] = `
       "UpdateReplacePolicy": "Delete",
     },
     "WorkerImportServiceB4147F84": {
+      "DependsOn": [
+        "WorkerImportTaskDefTaskRole787A0D1E",
+      ],
       "Properties": {
+        "CapacityProviderStrategy": [
+          {
+            "CapacityProvider": "FARGATE_SPOT",
+            "Weight": 1,
+          },
+        ],
         "Cluster": {
           "Ref": "ClusterEB0386A7",
         },
         "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false,
+          },
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true,
@@ -4091,35 +3733,8 @@ exports[`Snapshot 1`] = `
         "ContainerDefinitions": [
           {
             "Command": [
-              "exec python3 ./manage.py rqworker -v 3 import --worker-class cvat.rqworker.DefaultWorker",
-            ],
-            "EntryPoint": [
-              "/home/django/wait-for-it.sh",
-              {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "RedisCluster5292F556",
-                        "RedisEndpoint.Address",
-                      ],
-                    },
-                    ":",
-                    {
-                      "Fn::GetAtt": [
-                        "RedisCluster5292F556",
-                        "RedisEndpoint.Port",
-                      ],
-                    },
-                  ],
-                ],
-              },
-              "-t",
-              "0",
-              "--",
-              "bash",
-              "-ic",
+              "-c",
+              "supervisord/worker.import.conf",
             ],
             "Environment": [
               {
@@ -4149,10 +3764,14 @@ exports[`Snapshot 1`] = `
                   ],
                 },
               },
+              {
+                "Name": "SMOKESCREEN_OPTS",
+                "Value": "",
+              },
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:8d6974f621b157bc96bb9063c8609d3335893986b4742ac9befb9e656718a848",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -4232,7 +3851,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "256",
+        "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "WorkerImportTaskDefExecutionRole149B91C6",
@@ -4240,7 +3859,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testWorkerImportTaskDef7DC123F9",
-        "Memory": "512",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",
@@ -4405,11 +4024,25 @@ exports[`Snapshot 1`] = `
       "UpdateReplacePolicy": "Delete",
     },
     "WorkerWebhooksServiceEB68CE32": {
+      "DependsOn": [
+        "WorkerWebhooksTaskDefTaskRoleB0A2D176",
+      ],
       "Properties": {
+        "CapacityProviderStrategy": [
+          {
+            "CapacityProvider": "FARGATE_SPOT",
+            "Weight": 1,
+          },
+        ],
         "Cluster": {
           "Ref": "ClusterEB0386A7",
         },
         "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false,
+          },
           "DeploymentCircuitBreaker": {
             "Enable": true,
             "Rollback": true,
@@ -4455,35 +4088,8 @@ exports[`Snapshot 1`] = `
         "ContainerDefinitions": [
           {
             "Command": [
-              "exec python3 ./manage.py rqworker -v 3 webhooks",
-            ],
-            "EntryPoint": [
-              "/home/django/wait-for-it.sh",
-              {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "RedisCluster5292F556",
-                        "RedisEndpoint.Address",
-                      ],
-                    },
-                    ":",
-                    {
-                      "Fn::GetAtt": [
-                        "RedisCluster5292F556",
-                        "RedisEndpoint.Port",
-                      ],
-                    },
-                  ],
-                ],
-              },
-              "-t",
-              "0",
-              "--",
-              "bash",
-              "-ic",
+              "-c",
+              "supervisord/worker.webhooks.conf",
             ],
             "Environment": [
               {
@@ -4513,28 +4119,10 @@ exports[`Snapshot 1`] = `
                   ],
                 },
               },
-              {
-                "Name": "IAM_OPA_HOST",
-                "Value": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "http://",
-                      {
-                        "Fn::GetAtt": [
-                          "OpenPolicyAgentServiceCloudmapService72757B74",
-                          "Name",
-                        ],
-                      },
-                      ".cvat.local:8181",
-                    ],
-                  ],
-                },
-              },
             ],
             "Essential": true,
             "Image": {
-              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:7b0c75fa434cf1f353f24a49112ef5a359c113e1bb214f8c6fe11e3a995f4f48",
+              "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:8d6974f621b157bc96bb9063c8609d3335893986b4742ac9befb9e656718a848",
             },
             "LogConfiguration": {
               "LogDriver": "awslogs",
@@ -4614,7 +4202,7 @@ exports[`Snapshot 1`] = `
             ],
           },
         ],
-        "Cpu": "256",
+        "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
             "WorkerWebhooksTaskDefExecutionRole16CBE53A",
@@ -4622,7 +4210,7 @@ exports[`Snapshot 1`] = `
           ],
         },
         "Family": "testWorkerWebhooksTaskDef966F1DA8",
-        "Memory": "512",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE",

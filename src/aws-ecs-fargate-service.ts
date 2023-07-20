@@ -64,7 +64,9 @@ class FargateServiceBase extends Construct {
     super(scope, id);
 
     this.serviceName = props.serviceName || id.toLowerCase();
-    const { cpu, memoryLimitMiB, cluster, containerOptions, cpuArchitecture } = props;
+    const cpu = props.cpu ?? 512;
+    const memoryLimitMiB = props.memoryLimitMiB ?? 1024;
+    const { cluster, containerOptions, cpuArchitecture } = props;
 
     this.securityGroup = props.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: cluster.vpc });
 
@@ -99,21 +101,6 @@ class FargateServiceBase extends Construct {
       desiredCount: props.desiredCount,
     });
   }
-
-  //enableServiceConnect(portMappingName?: string) {
-  //  const services: ecs.ServiceConnectService[] = [];
-  //  if (typeof portMappingName == 'string') {
-  //    services.push({
-  //      portMappingName,
-  //      discoveryName: this.serviceName,
-  //      dnsName: this.serviceName,
-  //    });
-  //  }
-  //  this.service.enableServiceConnect({
-  //    services,
-  //    logDriver: this.logDriver,
-  //  });
-  //}
 
   enableCloudMap(containerPort: number) {
     const cloudMapService = this.service.enableCloudMap({
@@ -157,8 +144,11 @@ export class WorkerFargateService extends FargateServiceBase {
    */
   public readonly connections: ec2.Connections;
 
+  /** Job Worker with Fargate Spot */
   constructor(scope: Construct, id: string, props: WorkerFargateServiceProps) {
     super(scope, id, props);
+
+    (this.service.node.defaultChild as ecs.CfnService).capacityProviderStrategy = [{ capacityProvider: 'FARGATE_SPOT', weight: 1 }];
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
@@ -178,6 +168,7 @@ export class HttpFargateService extends FargateServiceBase {
    */
   public readonly endpoint: Endpoint;
 
+  /** HTTP Service */
   constructor(scope: Construct, id: string, props: HttpFargateServiceProps) {
     super(scope, id, props);
 
