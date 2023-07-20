@@ -21,6 +21,8 @@ interface CvatStackProps extends cdk.StackProps {
 }
 
 export class CvatStack extends cdk.Stack {
+
+  /** CVAT Stack */
   constructor(scope: Construct, id: string, props: CvatStackProps = {}) {
     super(scope, id, props);
 
@@ -30,7 +32,7 @@ export class CvatStack extends cdk.Stack {
     const uiImage = ecs.ContainerImage.fromRegistry(`cvat/ui:${cvatVersion}`);
     const cvatImage = ecs.ContainerImage.fromAsset('./containers/cvat-server', {
       buildArgs: {
-        CVAT_VERSION: 'dev',
+        CVAT_VERSION: cvatVersion,
       },
     });
 
@@ -46,19 +48,29 @@ export class CvatStack extends cdk.Stack {
       ),
     });
 
+    /** VPC for Containers and Database */
     const vpc = new ec2.Vpc(this, 'VPC', { natGateways: 1 });
 
-    const db = new AuroraServerlessV2Cluster(this, 'Database', {
-      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_14_5 }),
-      instances: (multiAZ) ? 2 : 1,
-      instanceProps: {
-        enablePerformanceInsights: true,
-        vpc,
-      },
-      storageEncrypted: true,
+    const readers: rds.IClusterInstance[] = [];
+    if (multiAZ) {
+      readers.push(rds.ClusterInstance.serverlessV2('Instance2', { scaleWithWriter: true }));
+    }
+
+    /** PostgreSQL Database */
+    const db = new rds.DatabaseCluster(this, 'Database', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.of('15.3', '15') }),
+      serverlessV2MinCapacity: 0.5,
+      serverlessV2MaxCapacity: 8,
+      writer: rds.ClusterInstance.serverlessV2('Instance1'),
+      readers,
       credentials: rds.Credentials.fromGeneratedSecret('postgres'),
       defaultDatabaseName: 'cvat',
+      storageEncrypted: true,
+      vpc,
     });
+
+    const instance1 = db.node.findChild('Instance1') as rds.CfnDBInstance;
 
     const redis = new RedisCluster(this, 'Redis', {
       version: '7.0',
@@ -86,11 +98,12 @@ export class CvatStack extends cdk.Stack {
       createAcl: { ownerUid: '1000', ownerGid: '1000', permissions: '0755' },
     });
 
+    /** ECS Cluster */
     const cluster = new ecs.Cluster(this, 'Cluster', {
-      containerInsights: true,
+      containerInsights: false,
       enableFargateCapacityProviders: true,
       defaultCloudMapNamespace: {
-        name: 'cvat.local',
+        name: 'cvat.internal',
       },
       vpc,
     });
@@ -98,54 +111,55 @@ export class CvatStack extends cdk.Stack {
     const loadBalancer = new elb.ApplicationLoadBalancer(this, 'LoadBalancer', { internetFacing: true, vpc });
     const cdn = new CloudFront(this, 'CDN', { originLoadBalancer: loadBalancer });
 
-    const cvatServerless = new HttpFargateService(this, 'Serverless', {
-      serviceName: 'serverless',
-      cluster,
-      containerOptions: {
-        image: ecs.ContainerImage.fromAsset('./containers/cvat-serverless'),
-      },
-      containerPort: 8070,
-    });
-    cvatServerless.taskDefinition.taskRole.attachInlinePolicy(new iam.Policy(this, 'SageMakerPolicy', {
-      statements: [
-        new iam.PolicyStatement({
-          actions: [
-            'sagemaker:ListEndpoints',
-            'sagemaker:ListModels',
-            'sagemaker:DescribeEndpoint',
-            'sagemaker:DescribeEndpointConfig',
-            'sagemaker:DescribeModel',
-          ],
-          resources: ['*'],
-        }),
-      ],
-    }));
+    //const cvatServerless = new HttpFargateService(this, 'Serverless', {
+    //  serviceName: 'serverless',
+    //  cluster,
+    //  containerOptions: {
+    //    image: ecs.ContainerImage.fromAsset('./containers/cvat-serverless'),
+    //  },
+    //  containerPort: 8070,
+    //});
+    //cvatServerless.taskDefinition.taskRole.attachInlinePolicy(new iam.Policy(this, 'SageMakerPolicy', {
+    //  statements: [
+    //    new iam.PolicyStatement({
+    //      actions: [
+    //        'sagemaker:ListEndpoints',
+    //        'sagemaker:ListModels',
+    //        'sagemaker:DescribeEndpoint',
+    //        'sagemaker:DescribeEndpointConfig',
+    //        'sagemaker:DescribeModel',
+    //      ],
+    //      resources: ['*'],
+    //    }),
+    //  ],
+    //}));
 
+    /** CVAT Server */
     const cvatServer = new HttpFargateService(this, 'Server', {
       serviceName: 'server',
       cluster,
-      cpu: 512,
-      memoryLimitMiB: 1024,
+      cpu: 1024,
+      memoryLimitMiB: 2048,
       containerOptions: {
         image: cvatImage,
-        command: ['-c', 'supervisord/server.conf'],
+        entryPoint: ['/home/django/backend_entrypoint.sh'],
         environment: {
           CVAT_HOST: cdn.distribution.distributionDomainName,
-          CVAT_BASE_URL: `https://${cdn.distribution.distributionDomainName}`,
           DJANGO_MODWSGI_EXTRA_ARGS: '',
           ALLOWED_HOSTS: '*',
           CVAT_REDIS_HOST: redis.clusterEndpoint.hostname,
           CVAT_POSTGRES_HOST: db.clusterEndpoint.hostname,
           ADAPTIVE_AUTO_ANNOTATION: 'false',
           IAM_OPA_BUNDLE: '1',
+          NUMPROCS: '2',
+          CVAT_ANALYTICS: '0',
+          CVAT_BASE_URL: `https://${cdn.distribution.distributionDomainName}`,
           // Oauth
           USE_ALLAUTH_SOCIAL_ACCOUNTS: cdk.Fn.conditionIf(oauthDisabled.logicalId, 'False', 'True').toString(),
-          // Clam AntiVirus
-          CLAM_AV: 'yes',
           // Automatic annotation
-          CVAT_SERVERLESS: '1',
-          CVAT_NUCLIO_HOST: cvatServerless.endpoint.hostname,
-          CVAT_NUCLIO_PORT: cvatServerless.endpoint.port.toString(),
+          //CVAT_SERVERLESS: '0',
+          //CVAT_NUCLIO_HOST: cvatServerless.endpoint.hostname,
+          //CVAT_NUCLIO_PORT: cvatServerless.endpoint.port.toString(),
         },
         secrets: {
           CVAT_POSTGRES_DBNAME: ecs.Secret.fromSecretsManager(db.secret!, 'dbname'),
@@ -162,6 +176,7 @@ export class CvatStack extends cdk.Stack {
     cvatServer.addVolume('data', { containerPath: '/home/django/data', accessPoint: dataAccessPoint });
     cvatServer.addVolume('share', { containerPath: '/home/django/share', accessPoint: shareAccessPoint });
 
+    /** CVAT Utils */
     const cvatUtils = new WorkerFargateService(this, 'Utils', {
       cluster,
       containerOptions: {
@@ -185,17 +200,17 @@ export class CvatStack extends cdk.Stack {
     cvatUtils.addVolume('data', { containerPath: '/home/django/data', accessPoint: dataAccessPoint });
     cvatUtils.addVolume('share', { containerPath: '/home/django/share', accessPoint: shareAccessPoint });
 
+    /** CVAT Worker Import */
     const cvatWorkerImport = new WorkerFargateService(this, 'WorkerImport', {
       cluster,
       containerOptions: {
         image: cvatImage,
-        entryPoint: ['/home/django/wait-for-it.sh', `${redis.clusterEndpoint.socketAddress}`, '-t', '0', '--', 'bash', '-ic'],
-        command: ['exec python3 ./manage.py rqworker -v 3 import --worker-class cvat.rqworker.DefaultWorker'],
-        //command: ['-c', 'supervisord/worker.import.conf'],
+        command: ['-c', 'supervisord/worker.import.conf'],
         environment: {
           CVAT_HOST: cdn.distribution.distributionDomainName,
           CVAT_REDIS_HOST: redis.clusterEndpoint.hostname,
           CVAT_POSTGRES_HOST: db.clusterEndpoint.hostname,
+          SMOKESCREEN_OPTS: '',
         },
         secrets: {
           CVAT_POSTGRES_DBNAME: ecs.Secret.fromSecretsManager(db.secret!, 'dbname'),
@@ -208,13 +223,12 @@ export class CvatStack extends cdk.Stack {
     cvatWorkerImport.addVolume('data', { containerPath: '/home/django/data', accessPoint: dataAccessPoint });
     cvatWorkerImport.addVolume('share', { containerPath: '/home/django/share', accessPoint: shareAccessPoint });
 
+    /** CVAT Worker Export */
     const cvatWorkerExport = new WorkerFargateService(this, 'WorkerExport', {
       cluster,
       containerOptions: {
         image: cvatImage,
-        entryPoint: ['/home/django/wait-for-it.sh', `${redis.clusterEndpoint.socketAddress}`, '-t', '0', '--', 'bash', '-ic'],
-        command: ['exec python3 ./manage.py rqworker -v 3 export --worker-class cvat.rqworker.DefaultWorker'],
-        //command: ['-c', 'supervisord/worker.export.conf'],
+        command: ['-c', 'supervisord/worker.export.conf'],
         environment: {
           CVAT_HOST: cdn.distribution.distributionDomainName,
           CVAT_REDIS_HOST: redis.clusterEndpoint.hostname,
@@ -231,13 +245,12 @@ export class CvatStack extends cdk.Stack {
     cvatWorkerExport.addVolume('data', { containerPath: '/home/django/data', accessPoint: dataAccessPoint });
     cvatWorkerExport.addVolume('share', { containerPath: '/home/django/share', accessPoint: shareAccessPoint });
 
+    /** CVAT Worker Annotation */
     const cvatWorkerAnnotation = new WorkerFargateService(this, 'WorkerAnnotation', {
       cluster,
       containerOptions: {
         image: cvatImage,
-        entryPoint: ['/home/django/wait-for-it.sh', `${redis.clusterEndpoint.socketAddress}`, '-t', '0', '--', 'bash', '-ic'],
-        command: ['exec python3 ./manage.py rqworker -v 3 annotation --worker-class cvat.rqworker.DefaultWorker'],
-        //command: ['-c', 'supervisord/worker.annotation.conf'],
+        command: ['-c', 'supervisord/worker.annotation.conf'],
         environment: {
           CVAT_HOST: cdn.distribution.distributionDomainName,
           CVAT_REDIS_HOST: redis.clusterEndpoint.hostname,
@@ -257,14 +270,13 @@ export class CvatStack extends cdk.Stack {
     cvatWorkerAnnotation.addVolume('data', { containerPath: '/home/django/data', accessPoint: dataAccessPoint });
     cvatWorkerAnnotation.addVolume('share', { containerPath: '/home/django/share', accessPoint: shareAccessPoint });
 
+    /** CVAT Worker Webhooks */
     const cvatWorkerWebhooks = new WorkerFargateService(this, 'WorkerWebhooks', {
-      serviceName: 'worker-webhooks',
+      //serviceName: 'worker-webhooks',
       cluster,
       containerOptions: {
         image: cvatImage,
-        entryPoint: ['/home/django/wait-for-it.sh', `${redis.clusterEndpoint.socketAddress}`, '-t', '0', '--', 'bash', '-ic'],
-        command: ['exec python3 ./manage.py rqworker -v 3 webhooks'],
-        //command: ['-c', 'supervisord/worker.webhooks.conf'],
+        command: ['-c', 'supervisord/worker.webhooks.conf'],
         environment: {
           CVAT_HOST: cdn.distribution.distributionDomainName,
           CVAT_REDIS_HOST: redis.clusterEndpoint.hostname,
@@ -281,6 +293,7 @@ export class CvatStack extends cdk.Stack {
     cvatWorkerWebhooks.addVolume('data', { containerPath: '/home/django/data', accessPoint: dataAccessPoint });
     cvatWorkerWebhooks.addVolume('share', { containerPath: '/home/django/share', accessPoint: shareAccessPoint });
 
+    /** Open Policy Agent */
     const opa = new HttpFargateService(this, 'OpenPolicyAgent', {
       serviceName: 'opa',
       cluster,
@@ -290,7 +303,7 @@ export class CvatStack extends cdk.Stack {
         command: [
           'run',
           '--server',
-          '--set=decision_logs.console=true',
+          '--log-level=error',
           `--set=services.cvat.url=http://${cvatServer.endpoint.socketAddress}`,
           '--set=bundles.cvat.service=cvat',
           '--set=bundles.cvat.resource=/api/auth/rules',
@@ -300,11 +313,8 @@ export class CvatStack extends cdk.Stack {
       },
       containerPort: 8181,
     });
-    cvatServer.taskDefinition.defaultContainer?.addEnvironment('IAM_OPA_HOST', `http://${opa.endpoint.socketAddress}`);
-    cvatUtils.taskDefinition.defaultContainer?.addEnvironment('IAM_OPA_HOST', `http://${opa.endpoint.socketAddress}`);
-    cvatWorkerAnnotation.taskDefinition.defaultContainer?.addEnvironment('IAM_OPA_HOST', `http://${opa.endpoint.socketAddress}`);
-    cvatWorkerWebhooks.taskDefinition.defaultContainer?.addEnvironment('IAM_OPA_HOST', `http://${opa.endpoint.socketAddress}`);
 
+    /** CVAT UI */
     const react = new HttpFargateService(this, 'React', {
       cluster,
       containerOptions: {
@@ -314,10 +324,12 @@ export class CvatStack extends cdk.Stack {
       containerPort: 80,
     });
 
+    cvatServer.service.node.addDependency(instance1);
+
     cvatServer.connections.allowToDefaultPort(db);
     cvatServer.connections.allowToDefaultPort(redis);
     cvatServer.connections.allowToDefaultPort(opa);
-    cvatServer.connections.allowToDefaultPort(cvatServerless);
+    //cvatServer.connections.allowToDefaultPort(cvatServerless);
 
     opa.connections.allowToDefaultPort(cvatServer);
 
@@ -370,7 +382,9 @@ export class CvatStack extends cdk.Stack {
     });
 
     const cvatUtilsTaskId = `$(aws ecs list-tasks --cluster ${cluster.clusterName} --service-name ${cvatUtils.service.serviceName} --query "taskArns[0]" --output text)`;
+
     new cdk.CfnOutput(this, 'CreateSuperuserCommand', { value: `aws ecs execute-command --cluster ${cluster.clusterName} --task ${cvatUtilsTaskId} --container app --interactive --command "python3 ./manage.py createsuperuser"` });
+
     new cdk.CfnOutput(this, 'Url', { value: `https://${cdn.distribution.distributionDomainName}` });
   }
 }

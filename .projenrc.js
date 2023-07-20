@@ -1,6 +1,6 @@
 const { awscdk } = require('projen');
 const project = new awscdk.AwsCdkTypeScriptApp({
-  cdkVersion: '2.59.0',
+  cdkVersion: '2.87.0',
   defaultReleaseBranch: 'main',
   name: 'cvat-on-aws',
   tsconfig: {

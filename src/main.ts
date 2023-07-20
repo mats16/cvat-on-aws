@@ -8,6 +8,10 @@ const devEnv = {
 
 const app = new App();
 
-new CvatStack(app, 'CVAT', { env: devEnv, cvatVersion: 'dev' });
+new CvatStack(app, 'Cvat', {
+  description: 'Computer Vision Annotation Tool (CVAT) on AWS',
+  env: devEnv,
+  cvatVersion: 'v2.5.0',
+});
 
 app.synth();
